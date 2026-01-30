@@ -2,8 +2,14 @@
 
 ini_set('memory_limit', '32M');
 
-define('ROOT_DIR', file_exists('/opt/etc/nfqws/nfqws.conf') ? '/opt' : '');
-define('SCRIPT_NAME', ROOT_DIR ? 'S51nfqws' : 'nfqws-keenetic');
+// TODO: Проверить что nfqws вообще установлен
+
+define('NFQWS2', file_exists('/opt/usr/bin/nfqws2') || file_exists('/usr/bin/nfqws2') ? true : false)
+define('ROOT_DIR', file_exists('/opt/usr/bin/nfqws2') || file_exists('/opt/usr/bin/nfqws') ? '/opt' : '');
+define('SCRIPT_NAME', ROOT_DIR ? (NFQWS2 ? 'S51nfqws' : 'S51nfqws2') : (NFQWS2 ? 'nfqws2-keenetic' : 'nfqws-keenetic'));
+define('CONF_DIR', NFQWS2 ? '/etc/nfqws2' : '/etc/nfqws')
+define('LISTS_DIR', NFQWS2 ? '/etc/nfqws2/lists' : '/etc/nfqws')
+define('LOG_FILE', NFQWS2 ? '/var/log/nfqws2.log' : '/var/log/nfqws.log')
 
 function normalizeString(string $s): string {
     // Convert all line-endings to UNIX format.
@@ -20,46 +26,74 @@ function normalizeString(string $s): string {
     return $s;
 }
 
-function getFiles($path = ROOT_DIR . '/etc/nfqws'): array {
+function getFiles(): array {
     // GLOB_BRACE is unsupported in openwrt
-    $files = array_filter(glob($path . '/*'), function ($file) {
-        return is_file($file) && preg_match('/\.(list|list-opkg|list-old|conf|conf-opkg|conf-old|apk-new)$/i', $file);
+    $lists = array_filter(glob(ROOT_DIR . LISTS_DIR . '/*'), function ($file) {
+        return is_file($file) && preg_match('/\.(list|list-opkg|list-old)$/i', $file);
     });
-    $logfile = ROOT_DIR . '/var/log/nfqws.log';
-    $basenames = array_map(fn($file) => basename($file), $files);
+    $baseLists = array_map(fn($file) => basename($file), $files);
+
+    $confs = array_filter(glob(ROOT_DIR . CONF_DIR . '/*'), function ($file) {
+        return is_file($file) && preg_match('/\.(conf|conf-opkg|conf-old|apk-new)$/i', $file);
+    });
+    $baseConfs = array_map(fn($file) => basename($file), $files);
+
+    $result = array_merge($baseLists, $baseConfs);
+
+    $logfile = ROOT_DIR . LOG_FILE;
     if (file_exists($logfile)) {
-        array_push($basenames, basename($logfile));
+        array_push($result, basename($logfile));
     }
 
-    $priority = ['nfqws.conf' => -7, 'user.list' => -6, 'exclude.list' => -5, 'auto.list' => -4, 'ipset.list' => -3, 'ipset_exclude.list' => -2, 'nfqws.log' => -1];
-    usort($basenames, fn($a, $b) => ($priority[$a] ?? 1) - ($priority[$b] ?? -1));
+    $priority = [
+        'nfqws2.conf' => -7,
+        'nfqws.conf' => -7,
+        'user.list' => -6,
+        'exclude.list' => -5,
+        'auto.list' => -4,
+        'ipset.list' => -3,
+        'ipset_exclude.list' => -2,
+        'nfqws.log' => -1
+    ];
+    usort($result, fn($a, $b) => ($priority[$a] ?? 1) - ($priority[$b] ?? -1));
 
-    return $basenames;
+    return $result;
 }
 
-function getFileContent(string $filename, $path = ROOT_DIR . '/etc/nfqws'): string {
-    return file_get_contents($path . '/' . basename($filename));
+function getFileContent(string $filename): string {
+    if (preg_match('/\.(list|list-opkg|list-old)$/i', $filename)) {
+        return file_get_contents(ROOT_DIR . LISTS_DIR . '/' . basename($filename));
+    }
+    return file_get_contents(ROOT_DIR . CONF_DIR . '/' . basename($filename));
 }
 
-function getLogContent(string $filename, $path = ROOT_DIR . '/var/log'): string {
-    $file = file($path . '/' . basename($filename));
+function getLogContent(): string {
+    $file = file(ROOT_DIR . LOG_FILE);
     $file = array_reverse($file);
     return implode("", $file);
 }
 
-function saveFile(string $filename, string $content, $path = ROOT_DIR . '/etc/nfqws') {
+function saveFile(string $filename, string $content) {
     $filename = basename($filename);
-    $file = $path . '/' . $filename;
+    if (preg_match('/\.(list|list-opkg|list-old)$/i', $filename)) {
+        $file = ROOT_DIR . LISTS_DIR . '/' . $filename;
+    } else {
+        $file = ROOT_DIR . CONF_DIR . '/' . $filename;
+    }
     return file_exists($file) && file_put_contents($file, normalizeString($content)) !== false;
 }
 
-function saveLog(string $filename, string $content, $path = ROOT_DIR . '/var/log') {
-    return saveFile($filename, $content, $path);
+function saveLog(string $filename, string $content) {
+    return saveFile($filename, $content, ROOT_DIR . LOG_FILE);
 }
 
-function removeFile(string $filename, $path = ROOT_DIR . '/etc/nfqws') {
+function removeFile(string $filename) {
     $filename = basename($filename);
-    $file = $path . '/' . $filename;
+    if (preg_match('/\.(list|list-opkg|list-old)$/i', $filename)) {
+        $file = ROOT_DIR . LISTS_DIR . '/' . $filename;
+    } else {
+        $file = ROOT_DIR . CONF_DIR . '/' . $filename;
+    }
     if (file_exists($file)) {
         return unlink($file);
     } else {
@@ -83,7 +117,11 @@ function nfqwsServiceAction(string $action) {
 function opkgUpgradeAction() {
     $output = null;
     $retval = null;
-    exec("opkg update && opkg upgrade nfqws-keenetic nfqws-keenetic-web", $output, $retval);
+    if (NFQWS2) {
+        exec("opkg update && opkg upgrade nfqws2-keenetic nfqws-keenetic-web", $output, $retval);
+    } else {
+        exec("opkg update && opkg upgrade nfqws-keenetic nfqws-keenetic-web", $output, $retval);
+    }
     if (empty($output)) {
         $output[] = 'Nothing to update';
     }
@@ -93,7 +131,11 @@ function opkgUpgradeAction() {
 function apkUpgradeAction() {
     $output = null;
     $retval = null;
-    exec("apk --update-cache add nfqws-keenetic nfqws-keenetic-web", $output, $retval);
+    if (NFQWS2) {
+        exec("apk --update-cache add nfqws2-keenetic nfqws-keenetic-web", $output, $retval);
+    } else {
+        exec("apk --update-cache add nfqws-keenetic nfqws-keenetic-web", $output, $retval);
+    }
     if (empty($output)) {
         $output[] = 'Nothing to update';
     }
@@ -149,7 +191,7 @@ function main() {
 
         case 'filecontent':
             if (str_ends_with($_POST['filename'], '.log')) {
-                $content = getLogContent($_POST['filename']);
+                $content = getLogContent();
             } else {
                 $content = getFileContent($_POST['filename']);
             }
