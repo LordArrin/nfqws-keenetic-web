@@ -2,10 +2,10 @@
 
 ./setup.sh
 
-echo "src-link nfqws-web /builder/src/openwrt" > feeds.conf
+echo "src-link nfqws_web /builder/src/openwrt" > feeds.conf
 
-./scripts/feeds update nfqws-web
-./scripts/feeds install -a -p nfqws-web
+./scripts/feeds update nfqws_web
+./scripts/feeds install -a -p nfqws_web
 
 make defconfig
 make CONFIG_USE_APK=y package/nfqws-keenetic-web/compile V=s

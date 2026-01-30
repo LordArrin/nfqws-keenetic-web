@@ -52,9 +52,9 @@ jobs:
       id: build
       working-directory: /builder
       run: |
-        echo "src-link nfqws-web $GITHUB_WORKSPACE/openwrt" > feeds.conf
-        ./scripts/feeds update nfqws-web
-        ./scripts/feeds install -a -p nfqws-web
+        echo "src-link nfqws_web $GITHUB_WORKSPACE/openwrt" > feeds.conf
+        ./scripts/feeds update nfqws_web
+        ./scripts/feeds install -a -p nfqws_web
         make defconfig
         make CONFIG_NO_STRIP=y CONFIG_USE_APK=y package/nfqws-keenetic-web/compile V=s
         make CONFIG_NO_STRIP=y CONFIG_USE_APK=y package/index V=s
@@ -66,13 +66,13 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: openwrt
-        path: /builder/bin/packages/x86_64/nfqws-web/*
+        path: /builder/bin/packages/x86_64/nfqws_web/*
         if-no-files-found: error
 
     - name: Summary
       run: |
         echo '```' >> $GITHUB_STEP_SUMMARY
-        ls /builder/bin/packages/x86_64/nfqws-web/ >> $GITHUB_STEP_SUMMARY
+        ls /builder/bin/packages/x86_64/nfqws_web/ >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
 
   build-entware:
