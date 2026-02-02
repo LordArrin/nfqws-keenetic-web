@@ -1,0 +1,308 @@
+openapi: 3.1.0
+info:
+  title: nfqws-keenetic-web
+  version: 1.0.0
+servers:
+  - url: /
+
+tags:
+  - name: NFQWS
+    description: nfqws-keenetic web UI API
+
+paths:
+  /index.php:
+    post:
+      tags: [NFQWS]
+      summary: Command-style endpoint (cmd)
+      operationId: postIndexCmd
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/IndexCmdRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/IndexCmdRequest'
+      responses:
+        '200':
+          description: Command response (depends on cmd)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexCmdResponse'
+        '401':
+          description: Unauthorized (if auth is enabled)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '405':
+          description: Method not allowed / unknown cmd
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+components:
+  schemas:
+    # -----------------------------
+    # Requests (discriminator by cmd)
+    # -----------------------------
+    IndexCmdRequest:
+      oneOf:
+        - $ref: '#/components/schemas/FilenamesRequest'
+        - $ref: '#/components/schemas/FileContentRequest'
+        - $ref: '#/components/schemas/FileSaveRequest'
+        - $ref: '#/components/schemas/FileRemoveRequest'
+        - $ref: '#/components/schemas/ServiceActionRequest'
+        - $ref: '#/components/schemas/UpgradeRequest'
+        - $ref: '#/components/schemas/LoginRequest'
+        - $ref: '#/components/schemas/LogoutRequest'
+      discriminator:
+        propertyName: cmd
+        mapping:
+          filenames: '#/components/schemas/FilenamesRequest'
+          filecontent: '#/components/schemas/FileContentRequest'
+          filesave: '#/components/schemas/FileSaveRequest'
+          fileremove: '#/components/schemas/FileRemoveRequest'
+          reload: '#/components/schemas/ServiceActionRequest'
+          restart: '#/components/schemas/ServiceActionRequest'
+          stop: '#/components/schemas/ServiceActionRequest'
+          start: '#/components/schemas/ServiceActionRequest'
+          upgrade: '#/components/schemas/UpgradeRequest'
+          login: '#/components/schemas/LoginRequest'
+          logout: '#/components/schemas/LogoutRequest'
+
+    FilenamesRequest:
+      type: object
+      required: [cmd]
+      properties:
+        cmd:
+          type: string
+          enum: [filenames]
+      additionalProperties: false
+
+    FileContentRequest:
+      type: object
+      required: [cmd, filename]
+      properties:
+        cmd:
+          type: string
+          enum: [filecontent]
+        filename:
+          type: string
+          description: File name to read. If ends with .log, server returns log content.
+      additionalProperties: false
+
+    FileSaveRequest:
+      type: object
+      required: [cmd, filename, content]
+      properties:
+        cmd:
+          type: string
+          enum: [filesave]
+        filename:
+          type: string
+        content:
+          type: string
+          description: Full file content to save
+      additionalProperties: false
+
+    FileRemoveRequest:
+      type: object
+      required: [cmd, filename]
+      properties:
+        cmd:
+          type: string
+          enum: [fileremove]
+        filename:
+          type: string
+      additionalProperties: false
+
+    ServiceActionRequest:
+      type: object
+      required: [cmd]
+      properties:
+        cmd:
+          type: string
+          enum: [reload, restart, stop, start]
+      additionalProperties: false
+
+    UpgradeRequest:
+      type: object
+      required: [cmd]
+      properties:
+        cmd:
+          type: string
+          enum: [upgrade]
+      additionalProperties: false
+
+    LoginRequest:
+      type: object
+      required: [cmd]
+      properties:
+        cmd:
+          type: string
+          enum: [login]
+      additionalProperties: true
+      description: |
+        Current PHP handler ignores credentials and returns {status:0}.
+        If you later add user/password, extend this schema.
+
+    LogoutRequest:
+      type: object
+      required: [cmd]
+      properties:
+        cmd:
+          type: string
+          enum: [logout]
+      additionalProperties: false
+
+    # -----------------------------
+    # Responses (discriminator by cmd)
+    # -----------------------------
+    IndexCmdResponse:
+      oneOf:
+        - $ref: '#/components/schemas/FilenamesResponse'
+        - $ref: '#/components/schemas/FileContentResponse'
+        - $ref: '#/components/schemas/FileSaveResponse'
+        - $ref: '#/components/schemas/FileRemoveResponse'
+        - $ref: '#/components/schemas/ActionResponse'
+        - $ref: '#/components/schemas/LoginResponse'
+        - $ref: '#/components/schemas/LogoutResponse'
+
+    FilenamesResponse:
+      type: object
+      required: [status, files, service, nfqws2, version]
+      properties:
+        status:
+          type: integer
+          enum: [0]
+        files:
+          type: array
+          items: { type: string }
+        service:
+          type: boolean
+          description: Service status (running or not)
+        nfqws2:
+          type: boolean
+        version:
+          type: string
+          nullable: true
+      additionalProperties: false
+      example:
+        status: 0
+        files: ["nfqws2.conf", "user.list", "exclude.list", "auto.list", "ipset.list", "ipset_exclude.list", "nfqws2.log"]
+        service: true
+        nfqws2: true
+        version: "0.1.4"
+
+    FileContentResponse:
+      type: object
+      required: [status, content, filename]
+      properties:
+        status:
+          type: integer
+          enum: [0]
+        content:
+          type: string
+        filename:
+          type: string
+      additionalProperties: false
+      example:
+        status: 0
+        filename: "nfqws2.conf"
+        content: "# Provider network interface..."
+
+    FileSaveResponse:
+      type: object
+      required: [status, filename]
+      properties:
+        status:
+          type: integer
+          description: 0 = ok, 1 = failed
+          enum: [0, 1]
+        filename:
+          type: string
+      additionalProperties: false
+      example:
+        status: 0
+        filename: "user.list"
+
+    FileRemoveResponse:
+      type: object
+      required: [status, filename]
+      properties:
+        status:
+          type: integer
+          description: 0 = ok, 1 = failed
+          enum: [0, 1]
+        filename:
+          type: string
+      additionalProperties: false
+      example:
+        status: 0
+        filename: "custom.list"
+
+    ActionResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: integer
+          description: 0 = ok, non-zero = error
+        output:
+          type: array
+          items: { type: string }
+          description: Optional console-like output lines
+      additionalProperties: true
+      example:
+        status: 0
+        output:
+          - "Restarting nfqws..."
+          - "OK"
+
+    LoginResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: integer
+          enum: [0]
+      additionalProperties: true
+      example:
+        status: 0
+
+    LogoutResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: integer
+          enum: [0]
+      additionalProperties: false
+      example:
+        status: 0
+
+    # -----------------------------
+    # Errors
+    # -----------------------------
+    ApiError:
+      type: object
+      required: [code, detail]
+      properties:
+        code:
+          type: string
+        detail:
+          type: string
+      additionalProperties: true
+      example:
+        code: "error"
+        detail: "Unexpected error"
