@@ -31,7 +31,7 @@ export const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const { data: status } = useStatus();
+  const { service } = useStatus();
 
   const { onSave, needSave } = useAppContext();
 
@@ -88,7 +88,7 @@ export const Header = () => {
               NFQWS 2
             </Typography>
 
-            {status?.service ? (
+            {service ? (
               <CloudDoneIcon
                 sx={{
                   fontSize: 20,
@@ -141,7 +141,7 @@ export const Header = () => {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               >
-                {status?.service && (
+                {service && (
                   <MenuItem
                     onClick={() => handleMenuClick('restart')}
                     sx={{ fontSize: 14 }}
@@ -153,7 +153,7 @@ export const Header = () => {
                   </MenuItem>
                 )}
 
-                {status?.service && (
+                {service && (
                   <MenuItem
                     onClick={() => handleMenuClick('reload')}
                     sx={{ fontSize: 14 }}
@@ -165,7 +165,7 @@ export const Header = () => {
                   </MenuItem>
                 )}
 
-                {status?.service ? (
+                {service ? (
                   <MenuItem
                     onClick={() => handleMenuClick('stop')}
                     sx={{ fontSize: 14 }}
