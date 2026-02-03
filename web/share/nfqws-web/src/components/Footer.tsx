@@ -1,11 +1,16 @@
+import { useAuth } from '@/store/useAuth';
 import { LogoutOutlined } from '@mui/icons-material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { Box, Link, Stack, Typography } from '@mui/material';
+
+import { API } from '@/api/client';
 
 import { useStatus } from '@/hooks/useStatus';
 
 export const Footer = () => {
   const { version, latest, updateAvailable, url } = useStatus();
+
+  const { auth } = useAuth();
 
   return (
     <Box
@@ -79,53 +84,62 @@ export const Footer = () => {
             web
           </Link>
 
-          <Link
-            component="button"
-            color="text.secondary"
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.85,
-              fontSize: 15,
-              lineHeight: 1,
-              '&:hover': {
-                color: 'primary.main',
-              },
-            }}
-          >
-            <LogoutOutlined sx={{ fontSize: '1.2em', alignSelf: 'center' }} />
-          </Link>
+          {auth && (
+            <Link
+              component="button"
+              color="text.secondary"
+              title="Logout"
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.85,
+                fontSize: 15,
+                lineHeight: 1,
+                '&:hover': {
+                  color: 'primary.main',
+                },
+              }}
+              onClick={async () => {
+                await API.logout();
+                void API.invalidateStatus();
+              }}
+            >
+              <LogoutOutlined sx={{ fontSize: '1.2em', alignSelf: 'center' }} />
+            </Link>
+          )}
         </Stack>
 
-        <Stack direction="row" spacing={1.5} alignItems="center">
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ ml: 1, fontSize: 15 }}
-          >
-            {updateAvailable ? (
-              <>
-                {version} (
-                <Link
-                  href={url}
-                  target="_blank"
-                  underline="none"
-                  color="text.secondary"
-                  sx={{
-                    '&:hover': {
-                      color: 'primary.main',
-                    },
-                  }}
-                >
-                  {latest}
-                </Link>
-                )
-              </>
-            ) : (
-              version
-            )}
-          </Typography>
-        </Stack>
+        {auth && (
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ ml: 1, fontSize: 15 }}
+            >
+              {updateAvailable ? (
+                <>
+                  {version} (
+                  <Link
+                    href={url}
+                    target="_blank"
+                    underline="none"
+                    color="text.secondary"
+                    sx={{
+                      '&:hover': {
+                        color: 'primary.main',
+                      },
+                    }}
+                  >
+                    {latest}
+                  </Link>
+                  )
+                </>
+              ) : (
+                version
+              )}
+            </Typography>
+          </Stack>
+        )}
       </Box>
     </Box>
   );

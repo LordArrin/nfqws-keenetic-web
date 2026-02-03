@@ -1,14 +1,7 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { useAuth } from '@/store/useAuth';
 import type { EditorView } from '@codemirror/view';
-import {
-  Backdrop,
-  Box,
-  CircularProgress,
-  Container,
-  CssBaseline,
-  ThemeProvider,
-} from '@mui/material';
+import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 
 import { API } from '@/api/client';
@@ -20,7 +13,6 @@ import { LoginDialog } from '@/components/LoginDialog';
 
 import { AppContext, type AppContextData } from '@/hooks/useAppContext';
 import { CONF_FILE_NAME } from '@/hooks/useFileContent';
-import { useStatus } from '@/hooks/useStatus';
 
 const theme = createTheme({
   colorSchemes: {
@@ -95,7 +87,6 @@ const theme = createTheme({
 
 export function Layout({ children }: { children: ReactNode }) {
   const { auth } = useAuth();
-  const { isPending } = useStatus();
 
   const [currentFile, setCurrentFile] = useState(CONF_FILE_NAME);
   const [needSave, setNeedSave] = useState(false);
@@ -150,15 +141,7 @@ export function Layout({ children }: { children: ReactNode }) {
             {auth && <FilesTabs />}
 
             <Box flex={1} sx={{ display: 'flex' }}>
-              {isPending ? (
-                <Backdrop open={true}>
-                  <CircularProgress color="inherit" />
-                </Backdrop>
-              ) : auth ? (
-                children
-              ) : (
-                <LoginDialog />
-              )}
+              {auth ? children : <LoginDialog />}
             </Box>
 
             <Footer />
