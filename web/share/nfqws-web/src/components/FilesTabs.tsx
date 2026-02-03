@@ -5,21 +5,12 @@ import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton,
-  Tab,
-  Tabs,
-} from '@mui/material';
+import { Box, IconButton, Tab, Tabs } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import { CloseFileDialog } from '@/components/CloseFileDialog';
 import { CreateFileDialog } from '@/components/CreateFileDialog';
+import { RemoveFileDialog } from '@/components/RemoveFileDialog';
 
 import { useAppContext } from '@/hooks/useAppContext';
 import { useFileNames } from '@/hooks/useFileNames';
@@ -32,6 +23,7 @@ export const FilesTabs = () => {
 
   const [alertRedirect, setAlertRedirect] = useState('');
   const [createDialog, setCreateDialog] = useState(false);
+  const [removeDialog, setRemoveDialog] = useState('');
 
   return (
     <>
@@ -92,7 +84,7 @@ export const FilesTabs = () => {
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      // TODO: add remove handler
+                      setRemoveDialog(name);
                     }}
                   >
                     <DeleteOutlineOutlinedIcon
@@ -112,9 +104,9 @@ export const FilesTabs = () => {
                       ml: 0.5,
                       p: '2px',
                     }}
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.stopPropagation();
-                      // TODO: add remove handler
+                      // TODO:
                     }}
                   >
                     <CleaningServicesIcon color="warning" fontSize="inherit" />
@@ -164,31 +156,20 @@ export const FilesTabs = () => {
         </Box>
       </Box>
 
-      <Dialog
+      <CloseFileDialog
         open={Boolean(alertRedirect)}
         onClose={() => setAlertRedirect('')}
-      >
-        <DialogTitle>File is not saved</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Current file is not saved. Really close?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={() => setAlertRedirect('')}>
-            No
-          </Button>
-          <Button
-            autoFocus
-            onClick={() => {
-              void navigate({ to: `/${alertRedirect}` });
-              setAlertRedirect('');
-            }}
-          >
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onSubmit={() => {
+          void navigate({ to: `/${alertRedirect}` });
+          setAlertRedirect('');
+        }}
+      />
+
+      <RemoveFileDialog
+        name={removeDialog}
+        open={Boolean(removeDialog)}
+        onClose={() => setRemoveDialog('')}
+      />
 
       <CreateFileDialog
         open={createDialog}

@@ -9,6 +9,7 @@ import {
   InputAdornment,
   TextField,
 } from '@mui/material';
+import { useNavigate } from '@tanstack/react-router';
 
 import { API } from '@/api/client';
 
@@ -21,12 +22,14 @@ export const CreateFileDialog = ({
 }) => {
   const [name, setName] = useState('');
   const [error, setError] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = useCallback(async () => {
     const { data } = await API.saveFile(`${name}.list`, '');
     if (data?.status === 0) {
       handleClose();
-      void API.invalidateListFiles();
+      await API.invalidateListFiles();
+      void navigate({ to: `/${name}.list` });
     } else {
       setError(true);
     }

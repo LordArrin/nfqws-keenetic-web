@@ -61,7 +61,7 @@ export const API = {
     apiClient.indexPhp.postIndexCmd({
       body: { cmd: 'filesave', filename, content },
     }),
-  fileremove: (filename: string) =>
+  removeFile: async (filename: string) =>
     apiClient.indexPhp.postIndexCmd({
       body: { cmd: 'fileremove', filename },
     }),
