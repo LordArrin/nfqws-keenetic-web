@@ -1,5 +1,16 @@
 import { API } from '@/api/client';
 
+export const PROTECTED_FILES = [
+  'nfqws2.conf',
+  'nfqws.conf',
+  'user.list',
+  'exclude.list',
+  'auto.list',
+  'ipset.list',
+  'ipset_exclude.list',
+  'nfqws.log',
+];
+
 export type FileInfo = {
   name: string;
   editable: boolean;
@@ -26,11 +37,13 @@ export function useFileNames() {
         filename.endsWith('.list-opkg') ||
         filename.endsWith('.list-old');
       const isOpkg = filename.endsWith('-opkg') || filename.endsWith('-old');
+      const isRemovable =
+        PROTECTED_FILES.indexOf(filename) < 0 && !filename.endsWith('.log');
 
       return {
         name: filename,
         editable: isConf || isList || isOpkg,
-        removable: isOpkg,
+        removable: isRemovable,
         type: isConf ? 'conf' : isList ? 'list' : 'log',
       };
     }) || [];

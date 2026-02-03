@@ -19,6 +19,8 @@ import {
 } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
+import { CreateFileDialog } from '@/components/CreateFileDialog';
+
 import { useAppContext } from '@/hooks/useAppContext';
 import { useFileNames } from '@/hooks/useFileNames';
 
@@ -29,6 +31,7 @@ export const FilesTabs = () => {
   const { currentFile, needSave } = useAppContext();
 
   const [alertRedirect, setAlertRedirect] = useState('');
+  const [createDialog, setCreateDialog] = useState(false);
 
   return (
     <>
@@ -153,9 +156,8 @@ export const FilesTabs = () => {
           <IconButton
             size="small"
             color="primary"
-            onClick={() => {
-              // TODO: add create file handler
-            }}
+            onClick={() => setCreateDialog(true)}
+            title="Create new file"
           >
             <AddOutlinedIcon fontSize="small" />
           </IconButton>
@@ -164,13 +166,11 @@ export const FilesTabs = () => {
 
       <Dialog
         open={Boolean(alertRedirect)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
         onClose={() => setAlertRedirect('')}
       >
-        <DialogTitle id="alert-dialog-title">File is not saved</DialogTitle>
+        <DialogTitle>File is not saved</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+          <DialogContentText>
             Current file is not saved. Really close?
           </DialogContentText>
         </DialogContent>
@@ -189,6 +189,11 @@ export const FilesTabs = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <CreateFileDialog
+        open={createDialog}
+        onClose={() => setCreateDialog(false)}
+      />
     </>
   );
 };

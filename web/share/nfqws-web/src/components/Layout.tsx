@@ -105,7 +105,7 @@ export function Layout({ children }: { children: ReactNode }) {
       onSave: async () => {
         if (needSave) {
           const text = editorView.current?.state.doc.toString();
-          if (text) {
+          if (text !== undefined) {
             const { data } = await API.saveFile(currentFile, text);
             if (data?.status === 0) {
               setNeedSave(false);

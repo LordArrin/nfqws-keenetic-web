@@ -47,11 +47,17 @@ export const API = {
     apiClient.indexPhp.postIndexCmd.useQuery({
       body: { cmd: 'filenames' },
     }) as UseQueryResult<FilenamesResponse, OperationError<ApiError>>,
+  invalidateListFiles: async () => {
+    const key = apiClient.indexPhp.postIndexCmd.getQueryKey({
+      body: { cmd: 'filenames' },
+    });
+    return queryClient.invalidateQueries({ queryKey: key });
+  },
   fileContent: (filename: FilenamesResponse['files'][0]) =>
     apiClient.indexPhp.postIndexCmd.useQuery({
       body: { cmd: 'filecontent', filename },
     }) as UseQueryResult<FileContentResponse, OperationError<ApiError>>,
-  saveFile: (filename: string, content: string) =>
+  saveFile: async (filename: string, content: string) =>
     apiClient.indexPhp.postIndexCmd({
       body: { cmd: 'filesave', filename, content },
     }),
