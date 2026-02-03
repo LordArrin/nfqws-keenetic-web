@@ -29,7 +29,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
           text: {
             primary: '#0f172a',
-            secondary: '#475569',
+            secondary: '#6e6e6e',
           },
 
           divider: 'rgba(15,23,42,0.08)',
@@ -52,7 +52,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
           text: {
             primary: '#e6edf3',
-            secondary: '#c2c2c2',
+            secondary: '#949b9f',
           },
 
           divider: 'rgba(255,255,255,0.08)',

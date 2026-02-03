@@ -107,11 +107,14 @@ export const FilesTabs = () => {
               label={labelNode}
               sx={{
                 minHeight: '50px',
-                background: (theme) =>
-                  `linear-gradient(to right, ${theme.palette.background.default}, ${theme.palette.background.paper})`,
                 fontSize: 14,
-                borderRight: '1px solid',
-                borderColor: 'divider',
+                transition: 'color 0.1s ease-in-out',
+                '&.Mui-selected': {
+                  color: 'text.primary',
+                },
+                '&:hover': {
+                  color: 'text.primary',
+                },
               }}
             />
           );
