@@ -60,7 +60,7 @@ function getFiles(): array
       'nfqws.log' => -10
     ];
 
-    if ($priority[$filename]) {
+    if (array_key_exists($filename, $priority)) {
       return $priority[$filename];
     }
     if (str_ends_with($filename, '.conf')) {

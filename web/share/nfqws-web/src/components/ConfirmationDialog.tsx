@@ -7,22 +7,24 @@ import {
   DialogTitle,
 } from '@mui/material';
 
-export const CloseFileDialog = ({
+export const ConfirmationDialog = ({
+  title,
+  description,
   open,
   onClose,
   onSubmit,
 }: {
+  title: string;
+  description: string;
   open: boolean;
   onClose: VoidFunction;
   onSubmit: VoidFunction;
 }) => {
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>File is not saved</DialogTitle>
+      <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Current file is not saved. Really close?
-        </DialogContentText>
+        <DialogContentText>{description}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={onClose}>

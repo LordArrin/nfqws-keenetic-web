@@ -8,7 +8,9 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { Box, IconButton, Tab, Tabs } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 
-import { CloseFileDialog } from '@/components/CloseFileDialog';
+import { API } from '@/api/client';
+
+import { ConfirmationDialog } from '@/components/ConfirmationDialog';
 import { CreateFileDialog } from '@/components/CreateFileDialog';
 import { RemoveFileDialog } from '@/components/RemoveFileDialog';
 
@@ -24,6 +26,7 @@ export const FilesTabs = () => {
   const [alertRedirect, setAlertRedirect] = useState('');
   const [createDialog, setCreateDialog] = useState(false);
   const [removeDialog, setRemoveDialog] = useState('');
+  const [clearDialog, setClearDialog] = useState('');
 
   return (
     <>
@@ -106,7 +109,7 @@ export const FilesTabs = () => {
                     }}
                     onClick={async (e) => {
                       e.stopPropagation();
-                      // TODO:
+                      setClearDialog(name);
                     }}
                   >
                     <CleaningServicesIcon color="warning" fontSize="inherit" />
@@ -156,7 +159,9 @@ export const FilesTabs = () => {
         </Box>
       </Box>
 
-      <CloseFileDialog
+      <ConfirmationDialog
+        title="File is not saved"
+        description="Current file is not saved. Really close?"
         open={Boolean(alertRedirect)}
         onClose={() => setAlertRedirect('')}
         onSubmit={() => {
@@ -174,6 +179,20 @@ export const FilesTabs = () => {
       <CreateFileDialog
         open={createDialog}
         onClose={() => setCreateDialog(false)}
+      />
+
+      <ConfirmationDialog
+        title="Clear log"
+        description="Really clear log file?"
+        open={Boolean(clearDialog)}
+        onClose={() => setClearDialog('')}
+        onSubmit={async () => {
+          const { data } = await API.saveFile(clearDialog, '');
+          if (data?.status === 0) {
+            void API.invalidateFileContent(clearDialog);
+          }
+          setClearDialog('');
+        }}
       />
     </>
   );

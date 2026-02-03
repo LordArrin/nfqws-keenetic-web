@@ -43,33 +43,48 @@ export const API = {
     apiClient.indexPhp.postIndexCmd.useQuery({
       body: { cmd: 'status' },
     }) as UseQueryResult<StatusResponse, OperationError<ApiError>>,
+
   listFiles: () =>
     apiClient.indexPhp.postIndexCmd.useQuery({
       body: { cmd: 'filenames' },
     }) as UseQueryResult<FilenamesResponse, OperationError<ApiError>>,
+
   invalidateListFiles: async () => {
     const key = apiClient.indexPhp.postIndexCmd.getQueryKey({
       body: { cmd: 'filenames' },
     });
     return queryClient.invalidateQueries({ queryKey: key });
   },
+
   fileContent: (filename: FilenamesResponse['files'][0]) =>
     apiClient.indexPhp.postIndexCmd.useQuery({
       body: { cmd: 'filecontent', filename },
     }) as UseQueryResult<FileContentResponse, OperationError<ApiError>>,
+
+  invalidateFileContent: async (filename: FilenamesResponse['files'][0]) => {
+    const key = apiClient.indexPhp.postIndexCmd.getQueryKey({
+      body: { cmd: 'filecontent', filename },
+    });
+    return queryClient.invalidateQueries({ queryKey: key });
+  },
+
   saveFile: async (filename: string, content: string) =>
     apiClient.indexPhp.postIndexCmd({
       body: { cmd: 'filesave', filename, content },
     }),
+
   removeFile: async (filename: string) =>
     apiClient.indexPhp.postIndexCmd({
       body: { cmd: 'fileremove', filename },
     }),
+
   action: (cmd: 'reload' | 'restart' | 'stop' | 'start' | 'upgrade') =>
     apiClient.indexPhp.postIndexCmd({ body: { cmd } }),
+
   login: (user: string, password: string) =>
     apiClient.indexPhp.postIndexCmd({
       body: { cmd: 'login', user, password },
     }),
+
   logout: () => apiClient.indexPhp.postIndexCmd({ body: { cmd: 'logout' } }),
 } as const;
