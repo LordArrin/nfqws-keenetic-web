@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useConfig } from '@/config/useConfig';
 import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
+import ChecklistIcon from '@mui/icons-material/Checklist';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import CloudOffIcon from '@mui/icons-material/CloudOff';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -37,7 +38,7 @@ export const Header = () => {
 
   const config = useConfig(nfqws2);
 
-  const { needSave, onSave } = useAppStore();
+  const { needSave, onSave, setCheckDomainsList, currentFile } = useAppStore();
 
   const [output, setOutput] = useState<boolean | string>(false);
 
@@ -114,6 +115,20 @@ export const Header = () => {
           </Stack>
 
           <Stack direction="row" spacing={2}>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<ChecklistIcon />}
+              color="success"
+              onClick={() =>
+                setCheckDomainsList(
+                  currentFile.endsWith('.list') ? currentFile : 'user.list',
+                )
+              }
+            >
+              Check domains
+            </Button>
+
             <Button
               variant="contained"
               size="small"

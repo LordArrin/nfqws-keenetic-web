@@ -2,6 +2,7 @@ import { type ReactNode } from 'react';
 import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 
+import { CheckDomainsDialog } from '@/components/CheckDomainsDialog';
 import { FilesTabs } from '@/components/FilesTabs';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
@@ -89,7 +90,7 @@ const theme = createTheme({
 });
 
 export function Layout({ children }: { children: ReactNode }) {
-  const { auth } = useAppStore();
+  const { auth, checkDomainsList, setCheckDomainsList } = useAppStore();
 
   return (
     <ThemeProvider theme={theme}>
@@ -118,6 +119,13 @@ export function Layout({ children }: { children: ReactNode }) {
           <Box flex={1} sx={{ display: 'flex', position: 'relative' }}>
             {auth ? children : <LoginDialog />}
           </Box>
+
+          {checkDomainsList && (
+            <CheckDomainsDialog
+              open={true}
+              onClose={() => setCheckDomainsList('')}
+            />
+          )}
 
           <Footer />
         </Box>

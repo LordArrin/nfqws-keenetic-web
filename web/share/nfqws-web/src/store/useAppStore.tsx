@@ -12,6 +12,9 @@ type AppStore = {
 
   onSave: () => Promise<void>;
   setOnSave: (v: () => Promise<void>) => void;
+
+  checkDomainsList: string;
+  setCheckDomainsList: (v: string) => void;
 };
 
 export const useAppStore = create<AppStore>((set) => ({
@@ -26,4 +29,7 @@ export const useAppStore = create<AppStore>((set) => ({
 
   onSave: async () => {},
   setOnSave: (onSave: () => Promise<void>) => set({ onSave }),
+
+  checkDomainsList: '',
+  setCheckDomainsList: (checkDomainsList) => set({ checkDomainsList }),
 }));
