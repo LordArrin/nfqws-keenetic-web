@@ -24,6 +24,7 @@ const theme = createTheme({
         text: {
           primary: '#0f172a',
           secondary: '#6e6e6e',
+          disabled: 'rgba(0, 0, 0, 0.23)',
         },
 
         divider: 'rgba(15,23,42,0.08)',
@@ -47,9 +48,10 @@ const theme = createTheme({
         text: {
           primary: '#e6edf3',
           secondary: '#949b9f',
+          disabled: 'rgba(255, 255, 255, 0.23)',
         },
 
-        divider: 'rgba(255,255,255,0.08)',
+        divider: 'rgba(255, 255, 255, 0.08)',
 
         success: { main: '#22c55e' },
         error: { main: '#ef4444' },
@@ -113,7 +115,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
           {auth && <FilesTabs />}
 
-          <Box flex={1} sx={{ display: 'flex' }}>
+          <Box flex={1} sx={{ display: 'flex', position: 'relative' }}>
             {auth ? children : <LoginDialog />}
           </Box>
 

@@ -4,6 +4,7 @@ import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { Box, IconButton, Tab, Tabs } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
@@ -59,7 +60,7 @@ export const FilesTabs = () => {
             <Tab
               key="main"
               value="main"
-              icon={<SettingsOutlinedIcon fontSize="small" />}
+              icon={<DisplaySettingsIcon fontSize="small" />}
               iconPosition="start"
               label="Config"
               sx={{

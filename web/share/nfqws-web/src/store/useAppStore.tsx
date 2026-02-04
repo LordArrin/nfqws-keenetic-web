@@ -1,4 +1,3 @@
-import type { EditorView } from '@codemirror/view';
 import { create } from 'zustand';
 
 type AppStore = {
@@ -10,9 +9,6 @@ type AppStore = {
 
   needSave: boolean;
   setNeedSave: (v: boolean) => void;
-
-  editorView: EditorView | null;
-  setEditorView: (v: EditorView | null) => void;
 
   onSave: () => Promise<void>;
   setOnSave: (v: () => Promise<void>) => void;
@@ -27,9 +23,6 @@ export const useAppStore = create<AppStore>((set) => ({
 
   needSave: false,
   setNeedSave: (needSave) => set({ needSave }),
-
-  editorView: null,
-  setEditorView: (editorView) => set({ editorView }),
 
   onSave: async () => {},
   setOnSave: (onSave: () => Promise<void>) => set({ onSave }),

@@ -1,12 +1,12 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { history } from '@codemirror/commands';
 import { Compartment } from '@codemirror/state';
-import { keymap } from '@codemirror/view';
+import { keymap, type EditorView } from '@codemirror/view';
 import { Box, useTheme } from '@mui/material';
+import { type SxProps } from '@mui/system/styleFunctionSx';
 import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
 import ReactCodeMirror from '@uiw/react-codemirror';
-
-import { useAppStore } from '@/store/useAppStore';
+import { type Property } from 'csstype';
 
 import type { FileInfo } from '@/hooks/useFileNames';
 
@@ -15,39 +15,55 @@ import { nfqwsConf, nfqwsLog } from '@/utils/nfqwsCodeMirrorLang';
 const historyCompartment = new Compartment();
 
 interface EditorProps {
-  file: FileInfo;
+  type: FileInfo['type'];
   value: string;
+  onChange?: (value: string, changed: boolean) => void;
+  onSave?: () => void;
   readonly?: boolean;
+  autoFocus?: boolean;
+  maxHeight?: Property.MaxHeight;
+  sx?: SxProps;
 }
 
-export const Editor = ({ file, value, readonly = false }: EditorProps) => {
+export const Editor = ({
+  type,
+  value,
+  onChange,
+  onSave,
+  readonly = false,
+  autoFocus = true,
+  maxHeight = 'auto',
+  sx,
+}: EditorProps) => {
   const { palette } = useTheme();
 
-  const { setNeedSave, editorView, setEditorView, onSave } = useAppStore();
+  const [editorView, setEditorView] = useState<EditorView | null>(null);
 
   const extensions = useMemo(() => {
-    const result = [
-      keymap.of([
-        {
-          key: 'Ctrl-s',
-          mac: 'Cmd-s',
-          run: () => {
-            void onSave();
-            return true;
-          },
-        },
-      ]),
-      historyCompartment.of([]),
-    ];
+    const result = [historyCompartment.of([])];
 
-    if (file.type === 'conf') {
+    if (onSave) {
+      result.push(
+        keymap.of([
+          {
+            key: 'Ctrl-s',
+            mac: 'Cmd-s',
+            run: () => {
+              onSave();
+              return true;
+            },
+          },
+        ]),
+      );
+    }
+    if (type === 'conf') {
       result.push(nfqwsConf());
-    } else if (file.type === 'log') {
+    } else if (type === 'log') {
       result.push(nfqwsLog());
     }
 
     return result;
-  }, [file, onSave]);
+  }, [type, onSave]);
 
   useEffect(() => {
     editorView?.dispatch({
@@ -62,16 +78,19 @@ export const Editor = ({ file, value, readonly = false }: EditorProps) => {
     <Box
       flex={1}
       sx={{
+        display: 'flex',
         position: 'relative',
+        overflow: 'auto',
         '& .cm-theme': {
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
+          display: 'flex',
+          minWidth: '100%',
+          fontSize: 13,
+          maxHeight,
         },
         '& .cm-editor': {
-          height: '100%',
+          display: 'flex !important',
+          minWidth: '100%',
+          minHeight: '100%',
           background: (theme) => theme.palette.background.default,
           outline: 'none',
         },
@@ -82,17 +101,19 @@ export const Editor = ({ file, value, readonly = false }: EditorProps) => {
         '& .cm-lineNumbers .cm-gutterElement': {
           paddingLeft: '13px !important',
         },
+        ...sx,
       }}
     >
       <ReactCodeMirror
         value={value}
         theme={palette.mode === 'light' ? vscodeLight : vscodeDark}
-        autoFocus={true}
+        autoFocus={autoFocus}
         readOnly={readonly}
         lang="shell"
-        style={{ height: '100%', fontSize: 13 }}
         onCreateEditor={(view) => setEditorView(view)}
-        onChange={(newValue) => setNeedSave(value !== newValue)}
+        onChange={(newValue) => {
+          onChange?.(newValue, value !== newValue);
+        }}
         basicSetup={{
           lineNumbers: true,
           foldGutter: true,

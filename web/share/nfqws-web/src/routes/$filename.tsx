@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { API } from '@/api/client';
@@ -17,24 +17,21 @@ export const Route = createFileRoute('/$filename')({
 function RouteComponent() {
   const { filename } = Route.useParams();
   const file = filename || CONF_FILE_NAME;
-  const { content, isPending } = useFileContent(file);
-  const {
-    setCurrentFile,
-    setNeedSave,
-    setOnSave,
-    needSave,
-    currentFile,
-    editorView,
-  } = useAppStore();
+  const { content: originalContent, isPending } = useFileContent(file);
+  const { setCurrentFile, setNeedSave, setOnSave, needSave, currentFile } =
+    useAppStore();
   const { findFile, isPending: isPendingNames } = useFileNames();
   const fileInfo = findFile(file);
+
+  const [content, setContent] = useState<string | undefined>();
+  const contentRef = useRef<string | undefined>(undefined);
 
   const onSave = useCallback(async () => {
     if (!needSave) {
       return;
     }
 
-    const text = editorView?.state.doc.toString();
+    const text = contentRef.current;
     if (text === undefined) {
       return;
     }
@@ -46,7 +43,11 @@ function RouteComponent() {
     } else {
       // TODO: error
     }
-  }, [currentFile, editorView, needSave, setNeedSave]);
+  }, [currentFile, needSave, setNeedSave]);
+
+  useEffect(() => {
+    contentRef.current = content;
+  }, [content]);
 
   useEffect(() => {
     setCurrentFile(file);
@@ -59,9 +60,15 @@ function RouteComponent() {
 
   return fileInfo ? (
     <Editor
-      value={content ?? ''}
-      file={fileInfo}
+      value={originalContent ?? ''}
+      type={fileInfo.type}
       readonly={isPending || isPendingNames || fileInfo?.type === 'log'}
+      onChange={(value, changed) => {
+        setNeedSave(changed);
+        setContent(value);
+      }}
+      onSave={onSave}
+      sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
     />
   ) : (
     <></>
