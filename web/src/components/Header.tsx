@@ -59,7 +59,9 @@ export const Header = () => {
     handleMenuClose();
     setOutput(true);
     const { data } = await API.action(command);
-    setOutput(`> nfqws2-keenetic ${command}\n${data?.output || ''}`);
+    setOutput(
+      `> nfqws2-keenetic ${command}\n${data?.output?.join('\n') || ''}`,
+    );
     void API.invalidateStatus();
   };
 
