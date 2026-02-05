@@ -9,7 +9,7 @@ _web-control:
 	echo "Depends: php8-cgi, php8-mod-session, lighttpd, lighttpd-mod-cgi, lighttpd-mod-setenv, lighttpd-mod-rewrite, lighttpd-mod-redirect" >> out/$(BUILD_DIR)/control/control
 	echo "License: MIT" >> out/$(BUILD_DIR)/control/control
 	echo "Section: net" >> out/$(BUILD_DIR)/control/control
-	echo "URL: https://github.com/Anonym-tsk/nfqws-keenetic" >> out/$(BUILD_DIR)/control/control
+	echo "URL: https://github.com/nfqws/nfqws-keenetic-web" >> out/$(BUILD_DIR)/control/control
 	echo "Architecture: all" >> out/$(BUILD_DIR)/control/control
 	echo "Description:  NFQWS2 service web interface" >> out/$(BUILD_DIR)/control/control
 	echo "" >> out/$(BUILD_DIR)/control/control
