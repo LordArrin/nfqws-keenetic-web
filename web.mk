@@ -30,9 +30,9 @@ _web-ipk:
 	cd out/$(BUILD_DIR)/control; tar czvf ../control.tar.gz .; cd ../../..
 
 	# data.tar.gz
-	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)
-	cp -r web/share out/$(BUILD_DIR)/data$(ROOT_DIR)/share
-	sed -i -E "s#__VERSION__#v$(VERSION)#g" out/$(BUILD_DIR)/data$(ROOT_DIR)/share/www/nfqws/index.html
+	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/share/www/nfqws
+	cp -r web/dist out/$(BUILD_DIR)/data$(ROOT_DIR)/share/www/nfqws
+	#sed -i -E "s#__VERSION__#v$(VERSION)#g" out/$(BUILD_DIR)/data$(ROOT_DIR)/share/www/nfqws/index.html
 
 	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d
 	cp etc/lighttpd/conf.d/entware.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d/80-nfqws.conf
@@ -48,9 +48,9 @@ _web-apk:
 	make _web-clean
 	make _web-scripts
 
-	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)
-	cp -r web/share/www out/$(BUILD_DIR)/data$(ROOT_DIR)/www
-	sed -i -E "s#__VERSION__#v$(VERSION)#g" out/$(BUILD_DIR)/data$(ROOT_DIR)/www/nfqws/index.html
+	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/www/nfqws
+	cp -r web/dist out/$(BUILD_DIR)/data$(ROOT_DIR)/www/nfqws
+	#sed -i -E "s#__VERSION__#v$(VERSION)#g" out/$(BUILD_DIR)/data$(ROOT_DIR)/www/nfqws/index.html
 
 	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d
 	cp etc/lighttpd/conf.d/openwrt.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d/80-nfqws.conf
