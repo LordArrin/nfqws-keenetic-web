@@ -14,7 +14,6 @@ import { API } from '@/api/client';
 import { ConfirmationDialog } from '@/components/ConfirmationDialog';
 import { CreateFileDialog } from '@/components/CreateFileDialog';
 import { type MainTabsValues } from '@/components/MainTabs';
-import { RemoveFileDialog } from '@/components/RemoveFileDialog';
 
 import { useAppStore } from '@/store/useAppStore';
 
@@ -217,10 +216,21 @@ export const FilesTabs = () => {
         }}
       />
 
-      <RemoveFileDialog
-        name={removeDialog}
+      <ConfirmationDialog
+        title="Delete file"
+        description="Really delete this file?"
         open={Boolean(removeDialog)}
         onClose={() => setRemoveDialog('')}
+        onSubmit={async () => {
+          const { data } = await API.removeFile(removeDialog);
+          if (data?.status === 0) {
+            void API.invalidateListFiles();
+            if (currentFile === removeDialog) {
+              void navigate({ to: `/${currentTab}` });
+            }
+          }
+          setRemoveDialog('');
+        }}
       />
 
       <CreateFileDialog

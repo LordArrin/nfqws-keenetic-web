@@ -1,8 +1,10 @@
+import type { FilenamesRequest } from '@/api/schema';
+
 import type { MainTabsValues } from '@/components/MainTabs';
 
-import type { FileInfo } from '@/hooks/useFileNames';
-
-export const getFileTypeForTab = (tab?: MainTabsValues): FileInfo['type'] => {
+export const getFileTypeForTab = (
+  tab?: MainTabsValues,
+): FilenamesRequest['type'] => {
   switch (tab) {
     case 'lists':
       return 'list';

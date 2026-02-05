@@ -35,7 +35,7 @@ export const CreateFileDialog = ({
     if (data?.status === 0) {
       handleClose();
       await API.invalidateListFiles();
-      void navigate({ to: `/${name}.list` });
+      void navigate({ to: `/lists/${name}.list` });
     } else {
       setError(true);
     }

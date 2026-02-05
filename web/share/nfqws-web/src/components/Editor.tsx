@@ -8,14 +8,14 @@ import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
 import ReactCodeMirror from '@uiw/react-codemirror';
 import { type Property } from 'csstype';
 
-import type { FileInfo } from '@/hooks/useFileNames';
+import type { FilenamesRequest } from '@/api/schema';
 
 import { nfqwsConf, nfqwsLog } from '@/utils/nfqwsCodeMirrorLang';
 
 const historyCompartment = new Compartment();
 
 interface EditorProps {
-  type: FileInfo['type'];
+  type: FilenamesRequest['type'];
   value: string;
   onChange?: (value: string, changed: boolean) => void;
   onSave?: () => void;

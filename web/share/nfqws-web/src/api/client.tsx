@@ -11,6 +11,7 @@ import {
   type ActionResponse,
   type ApiError,
   type FileContentResponse,
+  type FilenamesRequest,
   type FilenamesResponse,
   type FileRemoveResponse,
   type FileSaveResponse,
@@ -61,9 +62,9 @@ export const API = {
     return queryClient.invalidateQueries({ queryKey: key });
   },
 
-  listFiles: () =>
+  listFiles: (type?: FilenamesRequest['type']) =>
     apiClient.indexPhp.postIndexCmd.useQuery({
-      body: { cmd: 'filenames' },
+      body: { cmd: 'filenames', type },
     }) as UseQueryResult<FilenamesResponse, OperationError<ApiError>>,
 
   invalidateListFiles: async () => {
