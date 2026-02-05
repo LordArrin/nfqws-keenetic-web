@@ -7,10 +7,8 @@ import {
 } from 'react';
 import { useConfig } from '@/config/useConfig';
 import {
-  Backdrop,
   Box,
   Checkbox,
-  CircularProgress,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -122,12 +120,9 @@ function RouteComponent() {
       setForm((prev) => (prev ? { ...prev, [key]: value } : prev));
     };
 
-  if (isPending || !originalConfigParsed || !form)
-    return (
-      <Backdrop open={true}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
-    );
+  if (isPending || !originalConfigParsed || !form) {
+    return <></>;
+  }
 
   return (
     <Box

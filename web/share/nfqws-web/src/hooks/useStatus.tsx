@@ -63,16 +63,20 @@ export const useStatus = (): UseStatusResult => {
   );
 
   return useMemo(() => {
-    if (!isError && !isPending && latest && status?.status === 0) {
+    if (!isError && !isPending && status?.status === 0) {
       const current = parseVersion(status.version);
-      const updateAvailable = compareVersions(current, latest.version);
+
+      let updateAvailable = false;
+      if (latest) {
+        updateAvailable = compareVersions(current, latest.version);
+      }
 
       return {
         nfqws2: status.nfqws2,
         service: status.service,
         version: `${current.join('.')}`,
-        latest: `${latest.version.join('.')}`,
-        url: latest.url || '',
+        latest: latest ? `${latest.version.join('.')}` : '0.0.0',
+        url: latest?.url || '',
         updateAvailable,
         isPending,
       };

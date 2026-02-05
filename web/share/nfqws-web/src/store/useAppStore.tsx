@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 type AppStore = {
-  auth: boolean;
+  auth: boolean | undefined;
   setAuth: (v: boolean) => void;
 
   needSave: boolean;
@@ -15,7 +15,7 @@ type AppStore = {
 };
 
 export const useAppStore = create<AppStore>((set) => ({
-  auth: false,
+  auth: undefined,
   setAuth: (auth) => set({ auth }),
 
   needSave: false,

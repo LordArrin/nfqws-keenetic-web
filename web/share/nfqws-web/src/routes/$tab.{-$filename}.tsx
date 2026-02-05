@@ -69,7 +69,11 @@ function RouteComponent() {
     setOnSave(onSave);
   }, [onSave, setOnSave]);
 
-  return fileInfo ? (
+  if (!fileInfo) {
+    return <></>;
+  }
+
+  return (
     <Editor
       value={originalContent?.content ?? ''}
       type={fileInfo.type}
@@ -81,7 +85,5 @@ function RouteComponent() {
       onSave={onSave}
       sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
     />
-  ) : (
-    <></>
   );
 }
