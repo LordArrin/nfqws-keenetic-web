@@ -73,10 +73,13 @@ export const API = {
     return queryClient.invalidateQueries({ queryKey: key });
   },
 
-  fileContent: (filename: FilenamesResponse['files'][0]) =>
-    apiClient.indexPhp.postIndexCmd.useQuery({
-      body: { cmd: 'filecontent', filename },
-    }) as UseQueryResult<FileContentResponse, OperationError<ApiError>>,
+  fileContent: (filename: FilenamesResponse['files'][0], enabled = true) =>
+    apiClient.indexPhp.postIndexCmd.useQuery(
+      {
+        body: { cmd: 'filecontent', filename },
+      },
+      { enabled },
+    ) as UseQueryResult<FileContentResponse, OperationError<ApiError>>,
 
   invalidateFileContent: async (filename: FilenamesResponse['files'][0]) => {
     const key = apiClient.indexPhp.postIndexCmd.getQueryKey({

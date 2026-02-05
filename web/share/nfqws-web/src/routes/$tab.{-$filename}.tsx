@@ -7,7 +7,6 @@ import { Editor } from '@/components/Editor';
 
 import { useAppStore } from '@/store/useAppStore';
 
-import { useFileContent } from '@/hooks/useFileContent';
 import { useFileNames } from '@/hooks/useFileNames';
 
 import { getFileTypeForTab } from '@/utils/getFileTypeForTab';
@@ -28,7 +27,10 @@ function RouteComponent() {
   const currentFile =
     tab === 'settings' && !filename ? 'config' : filename || files[0]?.name;
 
-  const { content: originalContent, isPending } = useFileContent(currentFile);
+  const { data: originalContent, isPending } = API.fileContent(
+    currentFile,
+    Boolean(currentFile),
+  );
   const { setNeedSave, setOnSave, needSave } = useAppStore();
 
   const fileInfo = findFile(currentFile);
@@ -69,7 +71,7 @@ function RouteComponent() {
 
   return fileInfo ? (
     <Editor
-      value={originalContent ?? ''}
+      value={originalContent?.content ?? ''}
       type={fileInfo.type}
       readonly={isPending || isPendingNames || fileInfo?.type === 'log'}
       onChange={(value, changed) => {

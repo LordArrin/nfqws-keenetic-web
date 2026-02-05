@@ -5,6 +5,7 @@ import {
   useState,
   type ChangeEvent,
 } from 'react';
+import { useConfig } from '@/config/useConfig';
 import {
   Backdrop,
   Box,
@@ -27,7 +28,7 @@ import { FormEditor } from '@/components/FormEditor';
 
 import { useAppStore } from '@/store/useAppStore';
 
-import { CONF_FILE_NAME, useFileContent } from '@/hooks/useFileContent';
+import { useStatus } from '@/hooks/useStatus';
 
 import {
   formatConfig,
@@ -35,12 +36,16 @@ import {
   type NfqwsConfig,
 } from '@/utils/configParser';
 
+// TODO: Везде скелетоны
+
 export const Route = createFileRoute('/')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { content: originalConfig, isPending } = useFileContent(CONF_FILE_NAME);
+  const { nfqws2 } = useStatus();
+  const { confFile } = useConfig(nfqws2);
+  const { data: originalConfig, isPending } = API.fileContent(confFile);
   const { setNeedSave, needSave, setOnSave } = useAppStore();
 
   const [originalConfigParsed, setOriginalConfigParsed] =
@@ -52,10 +57,10 @@ function RouteComponent() {
   const needSaveRef = useRef<boolean>(false);
 
   useEffect(() => {
-    originalConfigRef.current = originalConfig ?? null;
+    originalConfigRef.current = originalConfig?.content ?? null;
     formRef.current = form;
     needSaveRef.current = needSave;
-  }, [originalConfig, form, needSave]);
+  }, [originalConfig?.content, form, needSave]);
 
   const onSave = useCallback(async () => {
     if (!needSaveRef.current) {
@@ -70,24 +75,24 @@ function RouteComponent() {
 
     const newConfig = formatConfig(oc, f);
     if (oc !== newConfig) {
-      const { data } = await API.saveFile(CONF_FILE_NAME, newConfig);
+      const { data } = await API.saveFile(confFile, newConfig);
       if (data?.status === 0) {
-        void API.invalidateFileContent(CONF_FILE_NAME);
+        void API.invalidateFileContent(confFile);
         setNeedSave(false);
       } else {
         // TODO: error
       }
     }
-  }, [setNeedSave]);
+  }, [confFile, setNeedSave]);
 
   useEffect(() => {
-    if (originalConfig) {
-      const parsed = parseConfig(originalConfig);
+    if (originalConfig?.content) {
+      const parsed = parseConfig(originalConfig.content);
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setOriginalConfigParsed(parsed);
       setForm(parsed);
     }
-  }, [originalConfig]);
+  }, [originalConfig?.content]);
 
   useEffect(() => {
     setNeedSave(false);
@@ -170,11 +175,13 @@ function RouteComponent() {
           spellCheck={false}
         />
 
-        <FormEditor
-          label="Startup arguments"
-          value={originalConfigParsed.NFQWS_BASE_ARGS}
-          onChange={changeHandler('NFQWS_BASE_ARGS')}
-        />
+        {nfqws2 && (
+          <FormEditor
+            label="Startup arguments"
+            value={originalConfigParsed.NFQWS_BASE_ARGS}
+            onChange={changeHandler('NFQWS_BASE_ARGS')}
+          />
+        )}
 
         <FormEditor
           label="Base strategy"

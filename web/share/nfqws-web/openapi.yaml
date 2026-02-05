@@ -97,6 +97,9 @@ components:
         cmd:
           type: string
           enum: [filenames]
+        filename:
+          type: string
+          description: File name to read. If ends with .log, server returns log content.
       additionalProperties: false
 
     FileContentRequest:

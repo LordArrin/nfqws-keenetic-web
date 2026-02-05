@@ -17,9 +17,9 @@ import {
   type DialogProps,
 } from '@mui/material';
 
-import { useAppStore } from '@/store/useAppStore';
+import { API } from '@/api/client';
 
-import { useFileContent } from '@/hooks/useFileContent';
+import { useAppStore } from '@/store/useAppStore';
 
 import { checkDomains, parseListFile } from '@/utils/checkDomain';
 
@@ -31,7 +31,7 @@ export const CheckDomainsDialog = ({
   onClose: VoidFunction;
 }) => {
   const { checkDomainsList } = useAppStore();
-  const { content: list } = useFileContent(checkDomainsList);
+  const { data: list } = API.fileContent(checkDomainsList);
 
   const [domains, setDomains] = useState<string[]>([]);
   const [result, setResult] = useState<Record<string, boolean | null>>({});
@@ -86,13 +86,13 @@ export const CheckDomainsDialog = ({
   );
 
   useEffect(() => {
-    if (list) {
-      const parsed = parseListFile(list);
+    if (list?.content) {
+      const parsed = parseListFile(list.content);
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setDomains(parsed);
       setResult(Object.fromEntries(parsed.map((domain) => [domain, null])));
     }
-  }, [list, setDomains]);
+  }, [list?.content, setDomains]);
 
   return (
     <Dialog

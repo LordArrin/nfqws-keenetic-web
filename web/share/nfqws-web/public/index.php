@@ -27,24 +27,33 @@ function normalizeString(string $s): string
   return $s;
 }
 
-function getFiles(): array
+function getFiles(string $type = null): array
 {
-  // GLOB_BRACE is unsupported in openwrt
-  $lists = array_filter(glob(ROOT_DIR . LISTS_DIR . '/*'), function ($file) {
-    return is_file($file) && preg_match('/\.(list|list-opkg|list-old)$/i', $file);
-  });
-  $baseLists = array_map(fn($file) => basename($file), $lists);
+  $result = [];
 
-  $confs = array_filter(glob(ROOT_DIR . CONF_DIR . '/*'), function ($file) {
-    return is_file($file) && preg_match('/\.(conf|conf-opkg|conf-old|apk-new)$/i', $file);
-  });
-  $baseConfs = array_map(fn($file) => basename($file), $confs);
+  if (empty($type) || $type == 'conf') {
+    // GLOB_BRACE is unsupported in openwrt
+    $confs = array_filter(glob(ROOT_DIR . CONF_DIR . '/*'), function ($file) {
+      return is_file($file) && preg_match('/\.(conf|conf-opkg|conf-old|apk-new)$/i', $file);
+    });
+    $baseConfs = array_map(fn($file) => basename($file), $confs);
+    $result = array_merge($result, $baseConfs);
+  }
 
-  $result = array_merge($baseLists, $baseConfs);
+  if (empty($type) || $type == 'list') {
+    // GLOB_BRACE is unsupported in openwrt
+    $lists = array_filter(glob(ROOT_DIR . LISTS_DIR . '/*'), function ($file) {
+      return is_file($file) && preg_match('/\.(list|list-opkg|list-old)$/i', $file);
+    });
+    $baseLists = array_map(fn($file) => basename($file), $lists);
+    $result = array_merge($result, $baseLists);
+  }
 
-  $logfile = ROOT_DIR . LOG_FILE;
-  if (file_exists($logfile)) {
-    array_push($result, basename($logfile));
+  if (empty($type) || $type == 'log') {
+    $logfile = ROOT_DIR . LOG_FILE;
+    if (file_exists($logfile)) {
+      $result[] = basename($logfile);
+    }
   }
 
   function getSortPriority(string $filename): int
@@ -229,7 +238,7 @@ function main(): void
       break;
 
     case 'filenames':
-      $files = getFiles();
+      $files = getFiles($_POST['type'] ?? null);
       $response = array('status' => 0, 'files' => $files);
       break;
 
