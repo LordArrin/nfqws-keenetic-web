@@ -293,18 +293,18 @@ jobs:
         echo "Release v${{ steps.version.outputs.content }} created" >> $GITHUB_STEP_SUMMARY
 
   # TODO: deploy only when release published
-#  deploy-repository:
-#    runs-on: ubuntu-22.04
-#    needs: [build-repository]
-#
-#    steps:
-#    - name: Setup Pages
-#      uses: actions/configure-pages@v5
-#
-#    - name: Deploy to GitHub Pages
-#      id: deployment
-#      uses: actions/deploy-pages@v4
-#
-#    - name: Summary
-#      run: |
-#        echo "Repository deployed" >> $GITHUB_STEP_SUMMARY
+  deploy-repository:
+    runs-on: ubuntu-22.04
+    needs: [build-repository]
+
+    steps:
+    - name: Setup Pages
+      uses: actions/configure-pages@v5
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+    - name: Summary
+      run: |
+        echo "Repository deployed" >> $GITHUB_STEP_SUMMARY
