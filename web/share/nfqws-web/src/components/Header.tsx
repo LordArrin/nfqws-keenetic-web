@@ -68,7 +68,7 @@ export const Header = () => {
       <Box
         sx={{
           px: 3,
-          py: 1,
+          py: 1.5,
           borderBottom: '1px solid',
           borderColor: 'divider',
           backgroundColor: 'background.paper',
@@ -203,6 +203,16 @@ export const Header = () => {
                 onClose={handleMenuClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      bgcolor: 'background.default',
+                      backgroundImage: 'none',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                    },
+                  },
+                }}
               >
                 {service && (
                   <MenuItem
