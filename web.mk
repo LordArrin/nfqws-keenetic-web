@@ -16,9 +16,9 @@ _web-control:
 
 _web-scripts:
 	@if [[ "$(BUILD_DIR)" == "web-openwrt" ]]; then \
-	  cp web/ipk/postinst-openwrt out/$(BUILD_DIR)/control/postinst; \
+	  cp ipk/postinst-openwrt out/$(BUILD_DIR)/control/postinst; \
 	else \
-		cp web/ipk/postinst out/$(BUILD_DIR)/control/postinst; \
+		cp ipk/postinst out/$(BUILD_DIR)/control/postinst; \
 	fi
 
 _web-ipk:
@@ -35,7 +35,7 @@ _web-ipk:
 	sed -i -E "s#__VERSION__#v$(VERSION)#g" out/$(BUILD_DIR)/data$(ROOT_DIR)/share/www/nfqws/index.html
 
 	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d
-	cp web/etc/lighttpd/conf.d/entware.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d/80-nfqws.conf
+	cp etc/lighttpd/conf.d/entware.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d/80-nfqws.conf
 	cd out/$(BUILD_DIR)/data; tar czvf ../data.tar.gz .; cd ../../..
 
 	# ipk
@@ -53,7 +53,7 @@ _web-apk:
 	sed -i -E "s#__VERSION__#v$(VERSION)#g" out/$(BUILD_DIR)/data$(ROOT_DIR)/www/nfqws/index.html
 
 	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d
-	cp web/etc/lighttpd/conf.d/openwrt.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d/80-nfqws.conf
+	cp etc/lighttpd/conf.d/openwrt.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d/80-nfqws.conf
 
 web-entware:
 	@make \

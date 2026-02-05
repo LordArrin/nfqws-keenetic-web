@@ -6,7 +6,6 @@ import { Box, useTheme } from '@mui/material';
 import { type SxProps } from '@mui/system/styleFunctionSx';
 import { vscodeDark, vscodeLight } from '@uiw/codemirror-theme-vscode';
 import ReactCodeMirror from '@uiw/react-codemirror';
-import { type Property } from 'csstype';
 
 import type { FilenamesRequest } from '@/api/schema';
 
@@ -21,7 +20,7 @@ interface EditorProps {
   onSave?: () => void;
   readonly?: boolean;
   autoFocus?: boolean;
-  maxHeight?: Property.MaxHeight;
+  maxHeight?: number | string;
   sx?: SxProps;
 }
 
