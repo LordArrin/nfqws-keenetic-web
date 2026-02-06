@@ -2,7 +2,9 @@
   "system": {
     "not_installed": "NFQWS не установлен",
     "not_found": "404: Страница не найдена",
-    "change_theme": "Сменить тему оформления"
+    "change_theme": "Сменить тему оформления",
+    "change_lang_en": "Английский",
+    "change_lang_ru": "Русский"
   },
   "auth": {
     "login": "Вход",

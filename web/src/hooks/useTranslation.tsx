@@ -2,8 +2,13 @@ import { isValidElement, useCallback, useMemo, type ReactNode } from 'react';
 import en from '@/translations/en.json';
 import ru from '@/translations/ru.json';
 
-const SUPPORTED_LANGUAGES = ['en', 'ru'];
+import { useStorage } from '@/hooks/useStorage';
+
+const SUPPORTED_LANGUAGES = ['en', 'ru'] as const;
 const DEFAULT_LANGUAGE = 'en';
+const STORAGE_KEY = 'lang';
+
+type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 interface JsonObject {
   [key: string]: JsonValue;
@@ -102,14 +107,33 @@ const interpolate = (
 };
 
 export const useTranslation = () => {
-  // TODO: storage
+  const { storageRead, storageWrite } = useStorage();
+
   const language = useMemo(() => {
-    const detected = window.navigator.language.split('-')[0];
-    return SUPPORTED_LANGUAGES.includes(detected) ? detected : DEFAULT_LANGUAGE;
-  }, []);
+    const saved = storageRead<SupportedLanguage>(STORAGE_KEY);
+    if (saved && SUPPORTED_LANGUAGES.includes(saved)) {
+      return saved;
+    }
+
+    const detected = window.navigator.language?.split(
+      '-',
+    )[0] as SupportedLanguage;
+    if (SUPPORTED_LANGUAGES.includes(detected)) {
+      return detected;
+    }
+    return DEFAULT_LANGUAGE;
+  }, [storageRead]);
 
   const langpack = language === 'ru' ? ru : en;
   const defaultLangpack = en;
+
+  const setLanguage = useCallback(
+    (lang: (typeof SUPPORTED_LANGUAGES)[number]) => {
+      storageWrite(STORAGE_KEY, lang);
+      // TODO: инвалидировать language
+    },
+    [storageWrite],
+  );
 
   const t = useCallback(
     (path, params) => {
@@ -132,5 +156,5 @@ export const useTranslation = () => {
     [defaultLangpack, langpack],
   ) as TFunction;
 
-  return { t };
+  return { t, setLanguage, langcode: language };
 };

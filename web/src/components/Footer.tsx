@@ -2,7 +2,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
-import { Box, Link, Stack, useColorScheme } from '@mui/material';
+import { Box, IconButton, Link, Stack, useColorScheme } from '@mui/material';
 
 import { API } from '@/api/client';
 
@@ -12,7 +12,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 
 export const Footer = () => {
   const { auth } = useAppStore();
-  const { t } = useTranslation();
+  const { t, langcode, setLanguage } = useTranslation();
 
   const { mode, setMode } = useColorScheme();
 
@@ -99,14 +99,14 @@ export const Footer = () => {
             web
           </Link>
 
-          <Link
-            component="button"
-            color="text.secondary"
+          <IconButton
+            size="small"
             title={t('system.change_theme')}
             sx={{
               display: 'inline-flex',
-              gap: 0.85,
               fontSize: 15,
+              ml: 0.5,
+              color: 'text.secondary',
               '&:hover': {
                 color: 'primary.main',
               },
@@ -120,17 +120,40 @@ export const Footer = () => {
             ) : (
               <LightModeIcon sx={{ fontSize: '1.2em' }} />
             )}
-          </Link>
+          </IconButton>
+
+          <IconButton
+            size="small"
+            title={
+              langcode === 'ru'
+                ? t('system.change_lang_en')
+                : t('system.change_lang_ru')
+            }
+            sx={{
+              display: 'inline-flex',
+              fontSize: 13,
+              ml: 0.5,
+              color: 'text.secondary',
+              '&:hover': {
+                color: 'primary.main',
+              },
+            }}
+            onClick={async () => {
+              setLanguage(langcode === 'ru' ? 'en' : 'ru');
+            }}
+          >
+            {langcode === 'ru' ? 'EN' : 'RU'}
+          </IconButton>
 
           {auth && (
-            <Link
-              component="button"
-              color="text.secondary"
+            <IconButton
+              size="small"
               title={t('auth.logout')}
               sx={{
                 display: 'inline-flex',
-                gap: 0.85,
                 fontSize: 15,
+                ml: 0.5,
+                color: 'text.secondary',
                 '&:hover': {
                   color: 'primary.main',
                 },
@@ -141,7 +164,7 @@ export const Footer = () => {
               }}
             >
               <LogoutOutlinedIcon sx={{ fontSize: '1.2em' }} />
-            </Link>
+            </IconButton>
           )}
         </Stack>
       </Box>
