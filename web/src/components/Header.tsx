@@ -69,8 +69,8 @@ export const Header = () => {
     <>
       <Box
         sx={{
-          px: 3,
-          py: 2.5,
+          px: 'max(15px, 1.6vh)',
+          py: 'max(15px, 1.6vh)',
           borderBottom: '1px solid',
           borderColor: 'divider',
           backgroundColor: 'background.paper',

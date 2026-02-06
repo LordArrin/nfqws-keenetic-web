@@ -139,7 +139,9 @@ function RouteComponent() {
       >
         <FormGroup
           sx={{
-            padding: 3,
+            px: 'max(15px, 1.6vh)',
+            pt: 3,
+            pb: 2,
             gap: 4,
             width: '100%',
             flex: 1,
