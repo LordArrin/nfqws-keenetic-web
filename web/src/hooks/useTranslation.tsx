@@ -32,13 +32,11 @@ export type TranslationParamValue = string | number | ReactNode;
 export type TranslationParams = Record<string, TranslationParamValue>;
 
 type TFunction = {
-  (
-    key: TranslationKey,
-    params?: TranslationParams,
-    fallback?: string,
-  ): ReactNode;
-  (key: string, params?: TranslationParams, fallback?: string): ReactNode;
+  (key: TranslationKey): string;
+  (key: TranslationKey, params: TranslationParams): ReactNode;
 };
+
+const FALLBACK = '__MISSING__';
 
 const resolve = (keys: string[], pack: JsonValue): string | undefined => {
   let current: JsonValue = pack;
@@ -114,7 +112,7 @@ export const useTranslation = () => {
   const defaultLangpack = en;
 
   const t = useCallback(
-    (path, params, fallback = '__MISSING__') => {
+    (path, params) => {
       const keys = path.split('.');
 
       const primary = resolve(keys, langpack);
@@ -129,7 +127,7 @@ export const useTranslation = () => {
         }
       }
 
-      return fallback;
+      return FALLBACK;
     },
     [defaultLangpack, langpack],
   ) as TFunction;
