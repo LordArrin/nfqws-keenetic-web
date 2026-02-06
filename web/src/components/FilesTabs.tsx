@@ -16,8 +16,6 @@ import type { MainTabsValues } from '@/types/types';
 import { ConfirmationDialog } from '@/components/ConfirmationDialog';
 import { CreateFileDialog } from '@/components/CreateFileDialog';
 
-import { useAppStore } from '@/store/useAppStore';
-
 import { useFileNames } from '@/hooks/useFileNames';
 
 import { getFileTypeForTab } from '@/utils/getFileTypeForTab';
@@ -29,7 +27,6 @@ export const FilesTabs = () => {
   };
 
   const navigate = useNavigate();
-  const { needSave } = useAppStore();
 
   const { files, isPending, findFile } = useFileNames(getFileTypeForTab(tab));
 
@@ -43,7 +40,6 @@ export const FilesTabs = () => {
       ? filename
       : false;
 
-  const [alertRedirect, setAlertRedirect] = useState('');
   const [createDialog, setCreateDialog] = useState(false);
   const [removeDialog, setRemoveDialog] = useState('');
   const [clearDialog, setClearDialog] = useState('');
@@ -71,11 +67,7 @@ export const FilesTabs = () => {
             value={currentFile}
             onChange={(_, value) => {
               const to = value === 'config' ? '/' : `/${currentTab}/${value}`;
-              if (needSave) {
-                setAlertRedirect(to);
-              } else {
-                void navigate({ to });
-              }
+              void navigate({ to });
             }}
             variant="scrollable"
             scrollButtons="auto"
@@ -217,17 +209,6 @@ export const FilesTabs = () => {
           </Box>
         )}
       </Box>
-
-      <ConfirmationDialog
-        title="File is not saved"
-        description="Current file is not saved. Really close?"
-        open={Boolean(alertRedirect)}
-        onClose={() => setAlertRedirect('')}
-        onSubmit={() => {
-          void navigate({ to: alertRedirect });
-          setAlertRedirect('');
-        }}
-      />
 
       <ConfirmationDialog
         title="Delete file"

@@ -1,7 +1,9 @@
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { Backdrop, Box, CircularProgress, Typography } from '@mui/material';
+import { useBlocker, type AnyRouter } from '@tanstack/react-router';
 
 import { CheckDomainsDialog } from '@/components/CheckDomainsDialog';
+import { ConfirmationDialog } from '@/components/ConfirmationDialog';
 import { FilesTabs } from '@/components/FilesTabs';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
@@ -13,10 +15,21 @@ import { useAppStore } from '@/store/useAppStore';
 import { useStatus } from '@/hooks/useStatus';
 
 export function App({ children }: { children?: ReactNode }) {
-  const { auth, checkDomainsList, setCheckDomainsList } = useAppStore();
+  const { auth, checkDomainsList, setCheckDomainsList, needSave } =
+    useAppStore();
 
   const { isPending, status } = useStatus();
   const nfqwsInstalled = isPending || status;
+
+  const {
+    proceed,
+    reset,
+    status: blockStatus,
+  } = useBlocker<AnyRouter, true>({
+    shouldBlockFn: () => needSave,
+    enableBeforeUnload: () => needSave,
+    withResolver: true,
+  });
 
   return (
     <>
@@ -50,6 +63,14 @@ export function App({ children }: { children?: ReactNode }) {
           onClose={() => setCheckDomainsList('')}
         />
       )}
+
+      <ConfirmationDialog
+        title="File is not saved"
+        description="Current file is not saved. Really close?"
+        open={blockStatus === 'blocked'}
+        onClose={() => reset?.()}
+        onSubmit={() => proceed?.()}
+      />
 
       <Footer />
     </>
