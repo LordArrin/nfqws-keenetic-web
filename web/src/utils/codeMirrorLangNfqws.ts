@@ -208,6 +208,13 @@ function tokenDQuote(stream: StringStream, state: ConfState): string | null {
     return 'typeName';
   }
 
+  // Dash-prefixed values after '=' (e.g. --out-range=-n1). Treat as value, not a flag.
+  if (stream.peek() === '-' && (state.dqInFlagValue || state.dqInParamValue)) {
+    stream.next();
+    stream.eatWhile(/[A-Za-z0-9._\-+]/);
+    return 'typeName';
+  }
+
   // Single-dash flags inside quotes (rare): -x
   if (stream.peek() === '-') {
     stream.next();
@@ -264,13 +271,15 @@ function tokenBase(stream: StringStream, state: ConfState): string | null {
   }
 
   // Double-quoted strings: parse like shell fragments + highlight $VAR/${VAR}
+  // IMPORTANT: style the opening quote as `string` and switch tokenizer for subsequent content.
   if (ch === '"') {
     state.dqAtCmdStart = true;
     state.dqLastFlag = '';
     state.dqInFlagValue = false;
     state.dqInParamValue = false;
     state.dqAfterColon = false;
-    return chain(stream, state, tokenDQuote);
+    state.tokenize = tokenDQuote;
+    return 'string';
   }
 
   if (ch === '=') {
