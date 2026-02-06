@@ -45,12 +45,7 @@ export const FormEditor = ({
           },
         })}
       >
-        <Editor
-          value={value}
-          type="conf"
-          maxHeight="14em"
-          onChange={onChange}
-        />
+        <Editor value={value} type="arg" maxHeight="14em" onChange={onChange} />
       </Box>
 
       {description && <FormHelperText>{description}</FormHelperText>}

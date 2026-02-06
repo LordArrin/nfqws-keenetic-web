@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { history } from '@codemirror/commands';
-// import { StreamLanguage } from '@codemirror/language';
-// import { shell } from '@codemirror/legacy-modes/mode/shell';
 import { Compartment } from '@codemirror/state';
 import { keymap, type EditorView } from '@codemirror/view';
 import { Box, useTheme } from '@mui/material';
@@ -12,12 +10,15 @@ import ReactCodeMirror from '@uiw/react-codemirror';
 import type { FilenamesRequest } from '@/api/schema';
 
 import { codeMirrorLangLog } from '@/utils/codeMirrorLangLog';
-import { codeMirrorLangNfqws } from '@/utils/codeMirrorLangNfqws';
+import {
+  codeMirrorLangNfqws,
+  codeMirrorLangNfqwsArgs,
+} from '@/utils/codeMirrorLangNfqws';
 
 const historyCompartment = new Compartment();
 
 interface EditorProps {
-  type: FilenamesRequest['type'];
+  type: FilenamesRequest['type'] | 'lua' | 'arg';
   value: string;
   onChange?: (value: string, changed: boolean) => void;
   onSave?: () => void;
@@ -27,7 +28,6 @@ interface EditorProps {
   sx?: SxProps;
 }
 
-// TODO: lua support
 export const Editor = ({
   type,
   value,
@@ -61,10 +61,12 @@ export const Editor = ({
     }
     if (type === 'conf') {
       result.push(codeMirrorLangNfqws());
+    } else if (type === 'arg') {
+      result.push(codeMirrorLangNfqwsArgs());
     } else if (type === 'log') {
       result.push(codeMirrorLangLog());
-    } else {
-      // result.push(StreamLanguage.define(shell));
+    } else if (type === 'lua') {
+      // TODO: lua support
     }
 
     return result;

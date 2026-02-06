@@ -229,6 +229,21 @@ function tokenDQuote(stream: StringStream, state: ConfState): string | null {
   return 'string';
 }
 
+// Like tokenDQuote, but for editors that contain ONLY the args value (no surrounding quotes).
+// It behaves as if we are always "inside" the double-quoted value.
+function tokenArgs(stream: StringStream, state: ConfState): string | null {
+  // In args-only mode, a literal quote is just a character.
+  if (stream.peek() === '"') {
+    stream.next();
+    return 'string';
+  }
+
+  // Delegate to the same logic as inside quotes.
+  // tokenDQuote may switch back to tokenBase only when it sees a closing quote,
+  // but we handled quotes above, so that won't happen here.
+  return tokenDQuote(stream, state);
+}
+
 function tokenComment(stream: StringStream, state: ConfState) {
   let maybeEnd = false;
   let ch: string | void;
@@ -383,6 +398,32 @@ export const nfqwsConfStream = StreamLanguage.define<ConfState>({
   },
 });
 
+export const nfqwsArgsStream = StreamLanguage.define<ConfState>({
+  name: 'nfqws-args',
+  startState() {
+    const state: ConfState = {
+      tokenize: tokenArgs,
+      dqAtCmdStart: true,
+      dqLastFlag: '',
+      dqInFlagValue: false,
+      dqInParamValue: false,
+      dqAfterColon: false,
+    };
+    return state;
+  },
+  token(stream, state) {
+    if (stream.eatSpace()) return null;
+    return state.tokenize(stream, state);
+  },
+  languageData: {
+    commentTokens: { line: '#' },
+  },
+});
+
 export function codeMirrorLangNfqws() {
   return new LanguageSupport(nfqwsConfStream);
+}
+
+export function codeMirrorLangNfqwsArgs() {
+  return new LanguageSupport(nfqwsArgsStream);
 }
