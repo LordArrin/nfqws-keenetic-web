@@ -27,6 +27,11 @@ jobs:
         with:
           node-version: '24.x'
 
+      - name: Bump version file
+        uses: francktrouillez/auto-bump-version-file@v1
+        with:
+          file: 'VERSION'
+
       - name: Install dependencies
         run: yarn install --immutable && yarn cache clean
         working-directory: ./web
