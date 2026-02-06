@@ -91,7 +91,7 @@ export function Layout({ children }: { children: ReactNode }) {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            minHeight: '100vh',
+            minHeight: '100svh',
             width: '100%',
             maxWidth: 1620,
             mx: 'auto',

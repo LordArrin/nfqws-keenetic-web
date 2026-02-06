@@ -25,7 +25,7 @@ export const OutputLogDialog = ({
       maxWidth="sm"
       fullWidth={true}
       scroll="paper"
-      sx={{ maxHeight: '80vh' }}
+      sx={{ maxHeight: '80svh' }}
     >
       <DialogContent>
         <DialogContentText component="div">
