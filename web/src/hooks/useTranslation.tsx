@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { isValidElement, useCallback, useMemo, type ReactNode } from 'react';
 import en from '@/translations/en.json';
 import ru from '@/translations/ru.json';
 
@@ -28,11 +28,16 @@ type LeafStringPaths<T> = T extends string
 export type TranslationSchema = typeof en;
 export type TranslationKey = LeafStringPaths<TranslationSchema>;
 
-export type TranslationParams = Record<string, string | number>;
+export type TranslationParamValue = string | number | ReactNode;
+export type TranslationParams = Record<string, TranslationParamValue>;
 
 type TFunction = {
-  (key: TranslationKey, params?: TranslationParams, fallback?: string): string;
-  (key: string, params?: TranslationParams, fallback?: string): string;
+  (
+    key: TranslationKey,
+    params?: TranslationParams,
+    fallback?: string,
+  ): ReactNode;
+  (key: string, params?: TranslationParams, fallback?: string): ReactNode;
 };
 
 const resolve = (keys: string[], pack: JsonValue): string | undefined => {
@@ -49,12 +54,53 @@ const resolve = (keys: string[], pack: JsonValue): string | undefined => {
   return typeof current === 'string' ? current : undefined;
 };
 
-const interpolate = (template: string, params?: TranslationParams): string => {
+const interpolate = (
+  template: string,
+  params?: TranslationParams,
+): ReactNode => {
   if (!params) return template;
 
-  return template.replace(/\{\{(\w+)}}/g, (_, key) =>
-    key in params ? String(params[key]) : `{{${key}}}`,
+  const allPrimitive = Object.values(params).every(
+    (v) => typeof v === 'string' || typeof v === 'number',
   );
+  if (allPrimitive) {
+    return template.replace(/\{\{(\w+)}}/g, (_, key) =>
+      key in params ? String(params[key]) : `{{${key}}}`,
+    );
+  }
+
+  const re = /\{\{(\w+)}}/g;
+  const parts: ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = re.exec(template)) !== null) {
+    const [raw, key] = match;
+    const index = match.index;
+
+    if (index > lastIndex) {
+      parts.push(template.slice(lastIndex, index));
+    }
+
+    if (key in params) {
+      const value = params[key];
+      if (isValidElement(value)) {
+        parts.push({ ...value, key: `${key}-${index}` } as ReactNode);
+      } else {
+        parts.push(value as ReactNode);
+      }
+    } else {
+      parts.push(raw);
+    }
+
+    lastIndex = index + raw.length;
+  }
+
+  if (lastIndex < template.length) {
+    parts.push(template.slice(lastIndex));
+  }
+
+  return parts;
 };
 
 export const useTranslation = () => {
