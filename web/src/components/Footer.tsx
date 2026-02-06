@@ -6,8 +6,6 @@ import { Box, Link, Stack, useColorScheme } from '@mui/material';
 
 import { API } from '@/api/client';
 
-import { FooterVersion } from '@/components/FooterVersion';
-
 import { useAppStore } from '@/store/useAppStore';
 
 export const Footer = () => {
@@ -18,7 +16,7 @@ export const Footer = () => {
   return (
     <Box
       sx={{
-        px: 3,
+        px: 'max(15px, 1.6vh)',
         py: 1.5,
         borderTop: '1px solid',
         borderColor: 'divider',
@@ -29,7 +27,6 @@ export const Footer = () => {
         display="flex"
         justifyContent="space-between"
         gap={2}
-        flexWrap="wrap"
         alignItems="center"
       >
         <Stack
@@ -144,8 +141,6 @@ export const Footer = () => {
             </Link>
           )}
         </Stack>
-
-        <FooterVersion />
       </Box>
     </Box>
   );

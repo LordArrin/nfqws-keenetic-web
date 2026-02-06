@@ -25,6 +25,7 @@ import { useParams } from '@tanstack/react-router';
 import { API } from '@/api/client';
 import { type ServiceActionRequest } from '@/api/schema';
 
+import { CurrentVersion } from '@/components/CurrentVersion';
 import { OutputLogDialog } from '@/components/OutputLogDialog';
 
 import { useAppStore } from '@/store/useAppStore';
@@ -79,76 +80,85 @@ export const Header = () => {
       >
         <Box
           display="flex"
-          alignItems="center"
+          alignItems="baseline"
           justifyContent="space-between"
           flexWrap="wrap"
-          gap={2}
+          rowGap={2}
+          columnGap={1.7}
         >
           <Stack
             direction="row"
             spacing={1.3}
-            alignItems="baseline"
-            mr={2}
+            alignItems="center"
             flexGrow={1000}
           >
-            <Typography
-              component="h2"
-              fontFamily={'Vendor Logo, Roboto, sans-serif'}
-              textTransform="uppercase"
-              color="primary.main"
-              fontSize="1.25em"
-              lineHeight={1}
-              sx={{
-                '@media (max-width: 450px)': {
-                  fontSize: '0.85em',
-                },
-              }}
-            >
-              Keenetic
-            </Typography>
-            <Typography
-              component="h2"
-              fontFamily={'Device Model, Roboto, sans-serif'}
-              textTransform="uppercase"
-              color="textPrimary"
-              fontSize="1.131em"
-              lineHeight={1}
-              pt="3px"
-              ml="-0.2em"
-              sx={{
-                '@media (max-width: 450px)': {
-                  fontSize: '0.8em',
-                },
-              }}
-            >
-              {config.title}
-            </Typography>
+            {' '}
+            <Stack direction="row" spacing={1.3} alignItems="center">
+              <Typography
+                component="h2"
+                fontFamily={'Vendor Logo, Roboto, sans-serif'}
+                textTransform="uppercase"
+                color="primary.main"
+                fontSize="1.25em"
+                lineHeight={1}
+                sx={{
+                  '@media (max-width: 475px)': {
+                    fontSize: '0.85em',
+                  },
+                }}
+              >
+                Keenetic
+              </Typography>
+              <Typography
+                component="h2"
+                fontFamily={'Device Model, Roboto, sans-serif'}
+                textTransform="uppercase"
+                color="textPrimary"
+                fontSize="1.131em"
+                lineHeight={1}
+                pt="3px"
+                ml="-0.2em"
+                sx={{
+                  '@media (max-width: 475px)': {
+                    fontSize: '0.8em',
+                  },
+                }}
+              >
+                {config.title}
+              </Typography>
 
-            {service ? (
-              <CloudDoneIcon
-                sx={{
-                  fontSize: '1.25em',
-                  color: 'success.main',
-                  alignSelf: 'center',
-                  opacity: 0.9,
-                  '@media (max-width: 450px)': {
-                    fontSize: '1em',
-                  },
-                }}
-              />
-            ) : (
-              <CloudOffIcon
-                sx={{
-                  fontSize: '1.25em',
-                  color: 'error.main',
-                  alignSelf: 'center',
-                  opacity: 0.9,
-                  '@media (max-width: 450px)': {
-                    fontSize: '1em',
-                  },
-                }}
-              />
-            )}
+              {service ? (
+                <CloudDoneIcon
+                  sx={{
+                    fontSize: '1.25em',
+                    color: 'success.main',
+                    alignSelf: 'center',
+                    opacity: 0.9,
+                    '@media (max-width: 475px)': {
+                      fontSize: '1em',
+                    },
+                  }}
+                />
+              ) : (
+                <CloudOffIcon
+                  sx={{
+                    fontSize: '1.25em',
+                    color: 'error.main',
+                    alignSelf: 'center',
+                    opacity: 0.9,
+                    '@media (max-width: 475px)': {
+                      fontSize: '1em',
+                    },
+                  }}
+                />
+              )}
+            </Stack>
+            <CurrentVersion
+              sx={{
+                justifyContent: 'flex-end',
+                flexGrow: 500,
+              }}
+            />
           </Stack>
 
           <Stack
