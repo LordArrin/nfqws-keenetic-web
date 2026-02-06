@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+import { TranslationProvider } from '@/context/TranslationProvider';
 import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 
@@ -86,25 +87,27 @@ export function Layout({ children }: { children: ReactNode }) {
     <ThemeProvider theme={theme} modeStorageKey="theme">
       <CssBaseline />
 
-      <Container disableGutters sx={{ m: 0, px: 0 }} maxWidth={false}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '100svh',
-            width: '100%',
-            maxWidth: 1620,
-            mx: 'auto',
-            '@media (min-width: 1621px)': {
-              borderRight: '1px solid',
-              borderLeft: '1px solid',
-              borderColor: 'divider',
-            },
-          }}
-        >
-          {children}
-        </Box>
-      </Container>
+      <TranslationProvider>
+        <Container disableGutters sx={{ m: 0, px: 0 }} maxWidth={false}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: '100svh',
+              width: '100%',
+              maxWidth: 1620,
+              mx: 'auto',
+              '@media (min-width: 1621px)': {
+                borderRight: '1px solid',
+                borderLeft: '1px solid',
+                borderColor: 'divider',
+              },
+            }}
+          >
+            {children}
+          </Box>
+        </Container>
+      </TranslationProvider>
     </ThemeProvider>
   );
 }
