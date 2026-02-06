@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { history } from '@codemirror/commands';
+// import { StreamLanguage } from '@codemirror/language';
+// import { shell } from '@codemirror/legacy-modes/mode/shell';
 import { Compartment } from '@codemirror/state';
 import { keymap, type EditorView } from '@codemirror/view';
 import { Box, useTheme } from '@mui/material';
@@ -9,7 +11,8 @@ import ReactCodeMirror from '@uiw/react-codemirror';
 
 import type { FilenamesRequest } from '@/api/schema';
 
-import { nfqwsConf, nfqwsLog } from '@/utils/nfqwsCodeMirrorLang';
+import { codeMirrorLangLog } from '@/utils/codeMirrorLangLog';
+import { codeMirrorLangNfqws } from '@/utils/codeMirrorLangNfqws';
 
 const historyCompartment = new Compartment();
 
@@ -24,6 +27,7 @@ interface EditorProps {
   sx?: SxProps;
 }
 
+// TODO: lua support
 export const Editor = ({
   type,
   value,
@@ -56,9 +60,11 @@ export const Editor = ({
       );
     }
     if (type === 'conf') {
-      result.push(nfqwsConf());
+      result.push(codeMirrorLangNfqws());
     } else if (type === 'log') {
-      result.push(nfqwsLog());
+      result.push(codeMirrorLangLog());
+    } else {
+      // result.push(StreamLanguage.define(shell));
     }
 
     return result;
@@ -109,7 +115,6 @@ export const Editor = ({
         autoFocus={autoFocus}
         readOnly={readonly}
         editable={!readonly}
-        lang="shell"
         onCreateEditor={(view) => setEditorView(view)}
         onChange={(newValue) => {
           onChange?.(newValue, value !== newValue);

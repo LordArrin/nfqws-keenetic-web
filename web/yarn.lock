@@ -359,6 +359,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@codemirror/legacy-modes@npm:^6.5.2":
+  version: 6.5.2
+  resolution: "@codemirror/legacy-modes@npm:6.5.2"
+  dependencies:
+    "@codemirror/language": "npm:^6.0.0"
+  checksum: 10c0/698639c80a12fbac3616308e8f4d70506fef93337a50cc8b3e2832c2029a9022a061a81cf02de13aa52d28fa42780c57ab91a6416e3b410765aa65ec113b6637
+  languageName: node
+  linkType: hard
+
 "@codemirror/lint@npm:^6.0.0":
   version: 6.9.3
   resolution: "@codemirror/lint@npm:6.9.3"
@@ -4117,6 +4126,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "nfqws-keenetic-web@workspace:."
   dependencies:
+    "@codemirror/legacy-modes": "npm:^6.5.2"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
     "@eslint/js": "npm:^9.39.2"
