@@ -101,29 +101,6 @@ export const Footer = () => {
 
           <IconButton
             size="small"
-            title={t('system.change_theme')}
-            sx={{
-              display: 'inline-flex',
-              fontSize: 15,
-              ml: 0.5,
-              color: 'text.secondary',
-              '&:hover': {
-                color: 'primary.main',
-              },
-            }}
-            onClick={() => {
-              setMode(mode === 'light' ? 'dark' : 'light');
-            }}
-          >
-            {mode === 'light' ? (
-              <DarkModeIcon sx={{ fontSize: '1.2em' }} />
-            ) : (
-              <LightModeIcon sx={{ fontSize: '1.2em' }} />
-            )}
-          </IconButton>
-
-          <IconButton
-            size="small"
             title={
               langcode === 'ru'
                 ? t('system.change_lang_en')
@@ -143,6 +120,29 @@ export const Footer = () => {
             }}
           >
             {langcode === 'ru' ? 'EN' : 'RU'}
+          </IconButton>
+
+          <IconButton
+            size="small"
+            title={t('system.change_theme')}
+            sx={{
+              display: 'inline-flex',
+              fontSize: 15,
+              ml: 0.5,
+              color: 'text.secondary',
+              '&:hover': {
+                color: 'primary.main',
+              },
+            }}
+            onClick={() => {
+              setMode(mode === 'light' ? 'dark' : 'light');
+            }}
+          >
+            {mode === 'light' ? (
+              <DarkModeIcon sx={{ fontSize: '1.2em' }} />
+            ) : (
+              <LightModeIcon sx={{ fontSize: '1.2em' }} />
+            )}
           </IconButton>
 
           {auth && (
