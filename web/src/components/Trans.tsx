@@ -1,8 +1,9 @@
-import {
-  useTranslation,
-  type TranslationKey,
-  type TranslationParams,
-} from '@/hooks/useTranslation';
+import type {
+  TranslationKey,
+  TranslationParams,
+} from '@/context/TranslationProvider';
+
+import { useTranslation } from '@/hooks/useTranslation';
 
 export const Trans = ({
   i18nKey,
