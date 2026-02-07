@@ -13,7 +13,6 @@ import StopCircleIcon from '@mui/icons-material/StopCircle';
 import {
   Box,
   Button,
-  IconButton,
   ListItemIcon,
   Menu,
   MenuItem,
@@ -204,17 +203,21 @@ export const Header = () => {
               flexGrow={1}
               justifyContent="flex-end"
             >
-              <IconButton
+              <Button
+                variant="text"
                 size="small"
                 onClick={handleMenuOpen}
                 sx={{
-                  bgcolor: 'primary.main',
-                  color: 'primary.contrastText',
-                  '&:hover': { bgcolor: 'primary.dark' },
+                  color: 'text.secondary',
+                  transition: 'color 0.1s ease-in-out',
+                  minWidth: 0,
+                  '&:hover': {
+                    color: 'primary.main',
+                  },
                 }}
               >
                 <MenuIcon />
-              </IconButton>
+              </Button>
 
               <Menu
                 anchorEl={anchorEl}
