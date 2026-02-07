@@ -52,8 +52,7 @@
     "list": "List:",
     "total": "Total domains:",
     "available": "Available:",
-    "blocked": "Blocked:",
-    "information": "May show false negative data due to {{cors}} limitations"
+    "blocked": "Blocked:"
   },
   "create_file": {
     "title": "Create list",
