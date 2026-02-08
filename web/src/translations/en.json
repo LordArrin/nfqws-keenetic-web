@@ -76,7 +76,7 @@
     "TCP_PORTS": "TCP ports",
     "UDP_PORTS": "UDP ports",
     "POLICY_NAME": "Policy name",
-    "POLICY_EXCLUDE": "Policy exclude mode",
+    "POLICY_EXCLUDE": "Policy excludes processing",
     "IPV6_ENABLED": "IPv6 enabled",
     "LOG_LEVEL": "Debug logging"
   }

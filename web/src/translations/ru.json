@@ -76,7 +76,7 @@
     "TCP_PORTS": "TCP-порты",
     "UDP_PORTS": "UDP-порты",
     "POLICY_NAME": "Название политики",
-    "POLICY_EXCLUDE": "Режим исключения политики",
+    "POLICY_EXCLUDE": "Политика исключает обработку",
     "IPV6_ENABLED": "IPv6 включён",
     "LOG_LEVEL": "Отладочное логирование"
   }
