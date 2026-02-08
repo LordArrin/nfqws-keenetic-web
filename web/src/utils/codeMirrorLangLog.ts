@@ -68,9 +68,42 @@ const logKeywords = wordRegexp([
   'retrans',
   'threshold',
   'reached',
+
+  // common key=value fields in debug logs
+  'src',
+  'dst',
+  'sport',
+  'dport',
+  'ttl',
+  'flags',
+  'seq',
+  'ack',
+  'ack_seq',
+  'len',
+  'id',
+  'mark',
+  'ifin',
+  'ifout',
+  'hostname',
+  'ssid',
+  'icmp',
+  'l7proto',
+  'track_direction',
+  'fixed_direction',
+  'connection_proto',
+  'payload_type',
 ]);
 
-const logProtocols = wordRegexp(['tls', 'quic', 'http', 'https', 'tcp', 'udp']);
+const logProtocols = wordRegexp([
+  'tls',
+  'quic',
+  'http',
+  'https',
+  'tcp',
+  'udp',
+  'ip4',
+  'ip6',
+]);
 
 const logWarnWords = wordRegexp([
   'retrans',
@@ -89,7 +122,7 @@ function looksLikeDomain(s: string) {
 
 function logTokenBase(stream: StringStream, _state: LogState): string | null {
   // Common separators in these logs
-  if (stream.peek() === ':') {
+  if (stream.peek() === ':' || stream.peek() === '=') {
     stream.next();
     return 'operator';
   }
@@ -160,11 +193,21 @@ function logTokenBase(stream: StringStream, _state: LogState): string | null {
     return 'number';
   }
 
+  // Hex numbers like 0xFFFFFAAC
+  if (stream.match(/^0x[0-9a-f]+/i, true)) {
+    return 'number';
+  }
+
   // Words / ids / domains (consume a token-like chunk)
   const ch = stream.next();
   if (ch == null) return null;
   stream.eatWhile(/[\w\-./]/);
   const cur = stream.current();
+
+  // Highlight any token that looks like a key in `key=value`
+  if (stream.peek() === '=') {
+    return 'def';
+  }
 
   // Levels
   if (logLevels.test(cur)) {
