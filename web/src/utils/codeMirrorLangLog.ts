@@ -57,37 +57,116 @@ const logKeywords = wordRegexp([
   'session',
   'client',
   'server',
+
+  // common nfqws fields
+  'profile',
+  'proto',
+  'udp_in',
+  'udp_out',
+  'fail',
+  'counter',
+  'retrans',
+  'threshold',
+  'reached',
 ]);
 
-function logTokenBase(stream: StringStream, _state: LogState): string | null {
-  const ch = stream.next();
-  if (ch == null) return null;
+const logProtocols = wordRegexp(['tls', 'quic', 'http', 'https', 'tcp', 'udp']);
 
-  // timestamps
-  if (/[\d:]/.test(ch)) {
-    stream.eatWhile(/[\d\-:.TZ]/);
-    const current = stream.current();
+const logWarnWords = wordRegexp([
+  'retrans',
+  'threshold',
+  'reached',
+  'timeout',
+  'retry',
+]);
+
+const logErrorWords = wordRegexp(['failed', 'error', 'fatal', 'critical']);
+
+function looksLikeDomain(s: string) {
+  // very lightweight: contains a dot, has letters, and no spaces
+  return /[A-Za-z]/.test(s) && s.includes('.') && !s.includes('..');
+}
+
+function logTokenBase(stream: StringStream, _state: LogState): string | null {
+  // Common separators in these logs
+  if (stream.peek() === ':') {
+    stream.next();
+    return 'operator';
+  }
+
+  // Timestamp at start of line: `08.02.2026 15:24:39`
+  if (stream.sol()) {
+    if (stream.match(/^\d{2}\.\d{2}\.\d{4}\s+\d{2}:\d{2}:\d{2}/, true)) {
+      return 'atom';
+    }
+    // ISO-ish variants
     if (
-      /^\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}:\d{2}/.test(current) ||
-      /^\d{2}:\d{2}:\d{2}/.test(current)
+      stream.match(/^\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?/, true)
     ) {
+      return 'atom';
+    }
+    // Time-only
+    if (stream.match(/^\d{2}:\d{2}:\d{2}/, true)) {
       return 'atom';
     }
   }
 
-  // IPs
-  if (/[\d.]/.test(ch)) {
-    stream.eatWhile(/[\d.:]/);
-    const ip = stream.current();
-    if (/^\d+\.\d+\.\d+\.\d+(:\d+)?$/.test(ip)) {
-      return 'number';
-    }
+  // Bracketed module like [nfqws]
+  if (stream.peek() === '[') {
+    stream.next();
+    stream.eatWhile(/[^\]]/);
+    if (stream.peek() === ']') stream.next();
+    return 'bracket';
   }
 
-  // words
-  stream.eatWhile(/[\w\-_]/);
+  // Parenthesized marker like (noname)
+  if (stream.peek() === '(') {
+    stream.next();
+    stream.eatWhile(/[^)]/);
+    if (stream.peek() === ')') stream.next();
+    return 'comment';
+  }
+
+  // Arrows / comparisons seen in counters: `udp_in 0<=1 udp_out 4>=4`
+  if (stream.match(/^(<==|==>|<=>|<=|>=|=>|=<)/, true)) {
+    return 'operator';
+  }
+
+  // IPs (optionally with port)
+  if (stream.match(/^\d+\.\d+\.\d+\.\d+(?::\d+)?/, true)) {
+    return 'number';
+  }
+
+  // UUID-like ids should be a single token (avoid highlighting the leading digits as a number)
+  if (
+    stream.match(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i,
+      true,
+    )
+  ) {
+    return 'string-2';
+  }
+
+  // Other long hex-ish ids (at least 12 chars, with letters+digits) as a single token
+  if (stream.match(/^[0-9a-f]{12,}/i, true)) {
+    return 'string-2';
+  }
+
+  // Numbers and counters like 1/3
+  if (stream.match(/^\d+\/\d+/, true)) {
+    return 'number';
+  }
+  if (stream.match(/^\d+/, true)) {
+    return 'number';
+  }
+
+  // Words / ids / domains (consume a token-like chunk)
+  const ch = stream.next();
+  if (ch == null) return null;
+  stream.eatWhile(/[\w\-./]/);
   const cur = stream.current();
 
+  // Levels
   if (logLevels.test(cur)) {
     if (cur === 'ERROR' || cur === 'FATAL' || cur === 'CRITICAL')
       return 'error';
@@ -97,20 +176,18 @@ function logTokenBase(stream: StringStream, _state: LogState): string | null {
     return 'tag';
   }
 
-  if (logKeywords.test(cur)) return 'keyword';
+  // Protocols
+  if (logProtocols.test(cur)) return 'typeName';
 
-  // [module]
-  if (ch === '[') {
-    stream.skipTo(']');
-    stream.next();
-    return 'bracket';
-  }
+  // Warnings / errors expressed as words
+  if (logErrorWords.test(cur)) return 'error';
+  if (logWarnWords.test(cur)) return 'warning';
 
-  // digits
-  if (/\d/.test(ch)) {
-    stream.eatWhile(/\d/);
-    return 'number';
-  }
+  // Field keys like `client`, `profile`, `proto`, `udp_in`
+  if (logKeywords.test(cur)) return 'def';
+
+  // Hostnames / domains (e.g. mainscope.jamfcloud.com)
+  if (looksLikeDomain(cur)) return 'string-2';
 
   return null;
 }
