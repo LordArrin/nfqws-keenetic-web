@@ -7,7 +7,7 @@ define('ROOT_DIR', (file_exists('/opt/usr/bin/nfqws2') || file_exists('/opt/usr/
 const SCRIPT_NAME = ROOT_DIR ? (NFQWS2 ? 'S51nfqws2' : 'S51nfqws') : (NFQWS2 ? 'nfqws2-keenetic' : 'nfqws-keenetic');
 const CONF_DIR = NFQWS2 ? '/etc/nfqws2' : '/etc/nfqws';
 const LISTS_DIR = NFQWS2 ? '/etc/nfqws2/lists' : '/etc/nfqws';
-const LOG_FILE = NFQWS2 ? '/var/log/nfqws2.log' : '/var/log/nfqws.log';
+const LOGS_DIR = '/var/log';
 
 function normalizeString(string $s): string
 {
@@ -138,10 +138,12 @@ function getFiles(string $type = null): array
   }
 
   if (empty($type) || $type == 'log') {
-    $logfile = ROOT_DIR . LOG_FILE;
-    if (file_exists($logfile)) {
-      $result[] = basename($logfile);
-    }
+    // GLOB_BRACE is unsupported in openwrt
+    $logs = array_filter(glob(ROOT_DIR . LOGS_DIR . '/nfqws*'), function ($file) {
+      return is_file($file) && preg_match('/\.log$/i', $file);
+    });
+    $baseLogs = array_map(fn($file) => basename($file), $logs);
+    $result = array_merge($result, $baseLogs);
   }
 
   function getSortPriority(string $filename): int
@@ -154,7 +156,10 @@ function getFiles(string $type = null): array
       'auto.list' => -52,
       'ipset.list' => -51,
       'ipset_exclude.list' => -50,
-      'nfqws.log' => -10
+      'nfqws2.log' => -11,
+      'nfqws.log' => -10,
+      'nfqws2-debug.log' => -9,
+      'nfqws-debug.log' => -8,
     ];
 
     if (array_key_exists($filename, $priority)) {
@@ -179,8 +184,11 @@ function getFiles(string $type = null): array
 
 function getFileContent(string $filename): string
 {
+  $filename = basename($filename);
   if (preg_match('/\.(list|list-opkg|list-old)$/i', $filename)) {
     $path = ROOT_DIR . LISTS_DIR . '/' . basename($filename);
+  } else if (preg_match('/\.log$/i', $filename)) {
+    $path = ROOT_DIR . LOGS_DIR . '/' . basename($filename);
   } else {
     $path = ROOT_DIR . CONF_DIR . '/' . basename($filename);
   }
@@ -191,9 +199,10 @@ function getFileContent(string $filename): string
   return '';
 }
 
-function getLogContent(): string
+function getLogContent(string $filename): string
 {
-  $file = file(ROOT_DIR . LOG_FILE);
+  $filename = basename($filename);
+  $file = file(ROOT_DIR . LOGS_DIR . '/' . $filename);
   $file = array_reverse($file);
   return implode("", $file);
 }
@@ -203,8 +212,8 @@ function saveFile(string $filename, string $content): bool
   $filename = basename($filename);
   if (preg_match('/\.(list|list-opkg|list-old)$/i', $filename)) {
     $file = ROOT_DIR . LISTS_DIR . '/' . $filename;
-  } elseif (preg_match('/\.(log)$/i', $filename)) {
-    $file = ROOT_DIR . LOG_FILE;
+  } elseif (preg_match('/\.log$/i', $filename)) {
+    $file = ROOT_DIR . LOGS_DIR . '/' . $filename;
   } else {
     $file = ROOT_DIR . CONF_DIR . '/' . $filename;
   }
@@ -345,7 +354,7 @@ function main(): void
 
     case 'filecontent':
       if (str_ends_with($_POST['filename'], '.log')) {
-        $content = getLogContent();
+        $content = getLogContent($_POST['filename']);
       } else {
         $content = getFileContent($_POST['filename']);
       }
