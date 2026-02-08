@@ -9,7 +9,7 @@ const APP_VERSION = fs.readFileSync('../VERSION', 'utf8').trim();
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: './',
+  base: '/',
   define: {
     'process.env.APP_VERSION': JSON.stringify(APP_VERSION),
   },
