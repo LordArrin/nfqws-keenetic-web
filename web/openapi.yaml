@@ -200,7 +200,7 @@ components:
 
     StatusResponse:
       type: object
-      required: [status, service, nfqws2, version]
+      required: [status, service, nfqws2, version, anonym]
       properties:
         status:
           type: integer
@@ -213,12 +213,15 @@ components:
         version:
           type: string
           nullable: true
+        anonym:
+          type: boolean
       additionalProperties: false
       example:
         status: 0
         service: true
         nfqws2: true
         version: "0.1.4"
+        anonym: false
 
     FilenamesResponse:
       type: object

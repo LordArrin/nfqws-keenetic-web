@@ -4,6 +4,7 @@ ini_set('memory_limit', '32M');
 
 define('NFQWS2', file_exists('/opt/usr/bin/nfqws2') || file_exists('/usr/bin/nfqws2'));
 define('ROOT_DIR', (file_exists('/opt/usr/bin/nfqws2') || file_exists('/opt/usr/bin/nfqws')) ? '/opt' : '');
+const CONF_FILE = ROOT_DIR . '/etc/nfqws_web.conf';
 const SCRIPT_NAME = ROOT_DIR ? (NFQWS2 ? 'S51nfqws2' : 'S51nfqws') : (NFQWS2 ? 'nfqws2-keenetic' : 'nfqws-keenetic');
 const CONF_DIR = NFQWS2 ? '/etc/nfqws2' : '/etc/nfqws';
 const LISTS_DIR = NFQWS2 ? '/etc/nfqws2/lists' : '/etc/nfqws';
@@ -361,8 +362,11 @@ function main(): void
     exit();
   }
 
+  $config = parse_ini_file(CONF_FILE, true);
+  $authEnabled = $config['auth']['enabled'];
+
   session_start();
-  if (!isset($_SESSION['auth']) || !$_SESSION['auth']) {
+  if ($authEnabled && !isset($_SESSION['auth']) || !$_SESSION['auth']) {
     if ($_POST['cmd'] !== 'login' || !isset($_POST['user']) || !isset($_POST['password']) || !authenticate($_POST['user'], $_POST['password'])) {
       http_response_code(401);
       exit();
@@ -374,7 +378,7 @@ function main(): void
   switch ($_POST['cmd']) {
     case 'status':
       $status = nfqwsServiceStatus();
-      $response = array('status' => $status['status'], 'service' => $status['service'], 'nfqws2' => NFQWS2, 'version' => nfqwsInstalledVersion());
+      $response = array('status' => $status['status'], 'service' => $status['service'], 'nfqws2' => NFQWS2, 'version' => nfqwsInstalledVersion(), 'anonym' => !$authEnabled);
       break;
 
     case 'filenames':

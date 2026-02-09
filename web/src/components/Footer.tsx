@@ -8,10 +8,13 @@ import { API } from '@/api/client';
 
 import { useAppStore } from '@/store/useAppStore';
 
+import { useStatus } from '@/hooks/useStatus';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export const Footer = () => {
   const { auth } = useAppStore();
+  const { anonym } = useStatus();
+  console.warn('anonym', anonym);
   const { t, langcode, setLanguage } = useTranslation();
 
   const { mode, setMode } = useColorScheme();
@@ -159,7 +162,7 @@ export const Footer = () => {
           )}
         </IconButton>
 
-        {auth && (
+        {auth && !anonym && (
           <IconButton
             size="small"
             title={t('auth.logout')}

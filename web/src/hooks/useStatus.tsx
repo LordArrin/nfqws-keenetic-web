@@ -48,6 +48,7 @@ type UseStatusResult = {
   nfqws2: boolean;
   service: boolean;
   version?: Version;
+  anonym: boolean;
   webVersion?: Version;
   latest?: Version;
   webLatest?: Version;
@@ -81,6 +82,7 @@ export const useStatus = (): UseStatusResult => {
         nfqws2: status.nfqws2,
         service: status.service,
         version: current,
+        anonym: status.anonym,
         webVersion: currentWeb,
         latest: latest?.version,
         webLatest: latestWeb?.version,
@@ -94,7 +96,7 @@ export const useStatus = (): UseStatusResult => {
       status: isError || isPending,
       nfqws2: true,
       service: false,
-      updateAvailable: false,
+      anonym: false,
       isPending,
     };
   }, [isError, isPending, latest, latestWeb, status]);

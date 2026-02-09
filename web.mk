@@ -36,6 +36,7 @@ _web-ipk:
 
 	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d
 	cp etc/lighttpd/conf.d/entware.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d/80-nfqws.conf
+	cp etc/nfqws_web.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/nfqws_web.conf
 	cd out/$(BUILD_DIR)/data; tar czvf ../data.tar.gz .; cd ../../..
 
 	# ipk
@@ -54,6 +55,7 @@ _web-apk:
 
 	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d
 	cp etc/lighttpd/conf.d/openwrt.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/lighttpd/conf.d/80-nfqws.conf
+	cp etc/nfqws_web.conf out/$(BUILD_DIR)/data$(ROOT_DIR)/etc/nfqws_web.conf
 
 web-entware:
 	@make \
