@@ -10,6 +10,8 @@ export const getFileTypeForTab = (
       return 'list';
     case 'logs':
       return 'log';
+    case 'scripts':
+      return 'lua';
     default:
       return 'conf';
   }

@@ -101,7 +101,7 @@ components:
           enum: [filenames]
         type:
           type: string
-          enum: ['conf', 'list', 'log']
+          enum: ['conf', 'list', 'log', 'lua']
           description: File type to read.
       additionalProperties: false
 

@@ -1,4 +1,5 @@
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import DataObjectIcon from '@mui/icons-material/DataObject';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import { Box, Tab, Tabs } from '@mui/material';
@@ -6,12 +7,14 @@ import { useNavigate, useParams } from '@tanstack/react-router';
 
 import { mainTabsValues, type MainTabsValues } from '@/types/types';
 
+import { useStatus } from '@/hooks/useStatus';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export const MainTabs = () => {
   const navigate = useNavigate();
 
   const { t } = useTranslation();
+  const { nfqws2 } = useStatus();
 
   const { tab } = useParams({ strict: false }) as {
     tab?: MainTabsValues;
@@ -101,6 +104,27 @@ export const MainTabs = () => {
               },
             }}
           />
+
+          {nfqws2 && (
+            <Tab
+              key="scripts"
+              value="scripts"
+              icon={<DataObjectIcon fontSize="small" />}
+              iconPosition="start"
+              label={t('tabs.scripts')}
+              sx={{
+                minHeight: '50px',
+                fontSize: 14,
+                transition: 'color 0.1s ease-in-out',
+                '&.Mui-selected': {
+                  color: 'text.primary',
+                },
+                '&:hover': {
+                  color: 'text.primary',
+                },
+              }}
+            />
+          )}
         </Tabs>
       </Box>
     </>

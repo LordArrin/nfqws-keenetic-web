@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { history } from '@codemirror/commands';
+import { StreamLanguage } from '@codemirror/language';
+import { lua } from '@codemirror/legacy-modes/mode/lua';
 import { Compartment } from '@codemirror/state';
 import { keymap, type EditorView } from '@codemirror/view';
 import { Box, useTheme } from '@mui/material';
@@ -66,7 +68,7 @@ export const Editor = ({
     } else if (type === 'log') {
       result.push(codeMirrorLangLog());
     } else if (type === 'lua') {
-      // TODO: lua support
+      result.push(StreamLanguage.define(lua));
     }
 
     return result;

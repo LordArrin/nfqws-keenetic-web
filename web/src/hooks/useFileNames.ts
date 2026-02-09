@@ -36,15 +36,18 @@ export function useFileNames(type?: FilenamesRequest['type']) {
       filename.endsWith('.list') ||
       filename.endsWith('.list-opkg') ||
       filename.endsWith('.list-old');
+    const isLua = filename.endsWith('.lua');
     const isOpkg = filename.endsWith('-opkg') || filename.endsWith('-old');
     const isRemovable =
-      !PROTECTED_FILES.includes(filename) && !filename.endsWith('.log');
+      !PROTECTED_FILES.includes(filename) &&
+      !filename.endsWith('.log') &&
+      !isLua;
 
     return {
       name: filename,
       editable: isConf || isList || isOpkg,
       removable: isRemovable,
-      type: isConf ? 'conf' : isList ? 'list' : 'log',
+      type: isConf ? 'conf' : isList ? 'list' : isLua ? 'lua' : 'log',
     };
   });
 

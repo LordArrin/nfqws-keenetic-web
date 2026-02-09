@@ -91,7 +91,12 @@ function RouteComponent() {
         <Editor
           value={originalContent?.content ?? ''}
           type={fileInfo.type}
-          readonly={isPending || isPendingNames || fileInfo?.type === 'log'}
+          readonly={
+            isPending ||
+            isPendingNames ||
+            fileInfo?.type === 'log' ||
+            fileInfo?.type === 'lua'
+          }
           onChange={(value, changed) => {
             setNeedSave(changed);
             setContent(value);

@@ -17,7 +17,8 @@
     "config": "Config",
     "settings": "Settings",
     "lists": "Lists",
-    "logs": "Logs"
+    "logs": "Logs",
+    "scripts": "Scripts"
   },
   "common": {
     "start": "Start",

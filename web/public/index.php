@@ -8,6 +8,7 @@ const SCRIPT_NAME = ROOT_DIR ? (NFQWS2 ? 'S51nfqws2' : 'S51nfqws') : (NFQWS2 ? '
 const CONF_DIR = NFQWS2 ? '/etc/nfqws2' : '/etc/nfqws';
 const LISTS_DIR = NFQWS2 ? '/etc/nfqws2/lists' : '/etc/nfqws';
 const LOGS_DIR = '/var/log';
+const LUA_DIR = '/etc/nfqws2/lua';
 
 function normalizeString(string $s): string
 {
@@ -117,45 +118,16 @@ function checkResponseBodyReadable(string $url, int $limitKb = 50): bool
 
 function getFiles(string $type = null): array
 {
-  $result = [];
-
-  if (empty($type) || $type == 'conf') {
-    // GLOB_BRACE is unsupported in openwrt
-    $confs = array_filter(glob(ROOT_DIR . CONF_DIR . '/*'), function ($file) {
-      return is_file($file) && preg_match('/\.(conf|conf-opkg|conf-old|apk-new)$/i', $file);
-    });
-    $baseConfs = array_map(fn($file) => basename($file), $confs);
-    $result = array_merge($result, $baseConfs);
-  }
-
-  if (empty($type) || $type == 'list') {
-    // GLOB_BRACE is unsupported in openwrt
-    $lists = array_filter(glob(ROOT_DIR . LISTS_DIR . '/*'), function ($file) {
-      return is_file($file) && preg_match('/\.(list|list-opkg|list-old)$/i', $file);
-    });
-    $baseLists = array_map(fn($file) => basename($file), $lists);
-    $result = array_merge($result, $baseLists);
-  }
-
-  if (empty($type) || $type == 'log') {
-    // GLOB_BRACE is unsupported in openwrt
-    $logs = array_filter(glob(ROOT_DIR . LOGS_DIR . '/nfqws*'), function ($file) {
-      return is_file($file) && preg_match('/\.log$/i', $file);
-    });
-    $baseLogs = array_map(fn($file) => basename($file), $logs);
-    $result = array_merge($result, $baseLogs);
-  }
-
   function getSortPriority(string $filename): int
   {
     $priority = [
       'nfqws2.conf' => -81,
       'nfqws.conf' => -80,
-      'user.list' => -54,
-      'exclude.list' => -53,
-      'auto.list' => -52,
-      'ipset.list' => -51,
-      'ipset_exclude.list' => -50,
+      'user.list' => -64,
+      'exclude.list' => -63,
+      'auto.list' => -62,
+      'ipset.list' => -61,
+      'ipset_exclude.list' => -60,
       'nfqws2.log' => -11,
       'nfqws.log' => -10,
       'nfqws2-debug.log' => -9,
@@ -169,12 +141,62 @@ function getFiles(string $type = null): array
       return -70;
     }
     if (str_ends_with($filename, '.list')) {
-      return -40;
+      return -50;
+    }
+    if (str_ends_with($filename, '.lua')) {
+      return -30;
     }
     if (str_ends_with($filename, '.log')) {
       return 0;
     }
     return 10;
+  }
+
+  function baseFileName(string $filename): string
+  {
+    $filename = basename($filename);
+    if (str_ends_with($filename, '.gz')) {
+      $filename = substr($filename, 0, -3);
+    }
+    return $filename;
+  }
+
+  $result = [];
+
+  if (empty($type) || $type == 'conf') {
+    // GLOB_BRACE is unsupported in openwrt
+    $confs = array_filter(glob(ROOT_DIR . CONF_DIR . '/*'), function ($file) {
+      return is_file($file) && preg_match('/\.(conf|conf-opkg|conf-old|apk-new)$/i', $file);
+    });
+    $baseConfs = array_map(fn($file) => baseFileName($file), $confs);
+    $result = array_merge($result, $baseConfs);
+  }
+
+  if (empty($type) || $type == 'list') {
+    // GLOB_BRACE is unsupported in openwrt
+    $lists = array_filter(glob(ROOT_DIR . LISTS_DIR . '/*'), function ($file) {
+      return is_file($file) && preg_match('/\.(list|list\.gz|list-opkg|list-old)$/i', $file);
+    });
+    $baseLists = array_map(fn($file) => baseFileName($file), $lists);
+    $result = array_merge($result, $baseLists);
+  }
+
+  if (empty($type) || $type == 'log') {
+    // GLOB_BRACE is unsupported in openwrt
+    $logs = array_filter(glob(ROOT_DIR . LOGS_DIR . '/nfqws*'), function ($file) {
+      return is_file($file) && preg_match('/\.log$/i', $file);
+    });
+    $baseLogs = array_map(fn($file) => baseFileName($file), $logs);
+    $result = array_merge($result, $baseLogs);
+  }
+
+  if (NFQWS2 && empty($type) || $type == 'lua') {
+    // GLOB_BRACE is unsupported in openwrt
+    $luas = array_filter(glob(ROOT_DIR . LUA_DIR . '/*'), function ($file) {
+      return is_file($file) && preg_match('/\.(lua|lua\.gz)$/i', $file);
+    });
+    $baseLuas = array_map(fn($file) => baseFileName($file), $luas);
+    $result = array_merge($result, $baseLuas);
   }
 
   usort($result, fn($a, $b) => getSortPriority($a) - getSortPriority($b));
@@ -189,12 +211,16 @@ function getFileContent(string $filename): string
     $path = ROOT_DIR . LISTS_DIR . '/' . basename($filename);
   } else if (preg_match('/\.log$/i', $filename)) {
     $path = ROOT_DIR . LOGS_DIR . '/' . basename($filename);
+  } else if (preg_match('/\.lua$/i', $filename)) {
+    $path = ROOT_DIR . LUA_DIR . '/' . basename($filename);
   } else {
     $path = ROOT_DIR . CONF_DIR . '/' . basename($filename);
   }
 
   if (file_exists($path)) {
     return file_get_contents($path);
+  } else if (file_exists($path . '.gz')) {
+    return file_get_contents('compress.zlib://' . $path . '.gz');
   }
   return '';
 }
@@ -214,6 +240,8 @@ function saveFile(string $filename, string $content): bool
     $file = ROOT_DIR . LISTS_DIR . '/' . $filename;
   } elseif (preg_match('/\.log$/i', $filename)) {
     $file = ROOT_DIR . LOGS_DIR . '/' . $filename;
+  } elseif (preg_match('/\.lua$/i', $filename)) {
+    $file = ROOT_DIR . LUA_DIR . '/' . $filename;
   } else {
     $file = ROOT_DIR . CONF_DIR . '/' . $filename;
   }
@@ -225,6 +253,8 @@ function removeFile(string $filename): bool
   $filename = basename($filename);
   if (preg_match('/\.(list|list-opkg|list-old)$/i', $filename)) {
     $file = ROOT_DIR . LISTS_DIR . '/' . $filename;
+  } else if (preg_match('/\.lua$/i', $filename)) {
+    $file = ROOT_DIR . LUA_DIR . '/' . $filename;
   } else {
     $file = ROOT_DIR . CONF_DIR . '/' . $filename;
   }

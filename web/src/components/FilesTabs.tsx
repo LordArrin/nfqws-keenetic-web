@@ -2,6 +2,7 @@ import { useState } from 'react';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
+import DataObjectIcon from '@mui/icons-material/DataObject';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
@@ -100,7 +101,7 @@ export const FilesTabs = () => {
               />
             )}
 
-            {files.map(({ name, removable, editable, type }) => {
+            {files.map(({ name, removable, type }) => {
               let icon = undefined;
 
               if (type === 'conf') {
@@ -109,6 +110,8 @@ export const FilesTabs = () => {
                 icon = <DescriptionOutlinedIcon fontSize="small" />;
               } else if (type === 'log') {
                 icon = <ArticleOutlinedIcon fontSize="small" />;
+              } else if (type === 'lua') {
+                icon = <DataObjectIcon fontSize="small" />;
               }
 
               const labelNode = (
@@ -143,7 +146,7 @@ export const FilesTabs = () => {
                     </IconButton>
                   )}
 
-                  {!editable && (
+                  {type === 'log' && (
                     <IconButton
                       component="span"
                       role="button"
