@@ -32,9 +32,9 @@ export const CheckDomainsDialog = ({
   open: boolean;
   onClose: VoidFunction;
 }) => {
-  const { checkDomainsList } = useAppStore();
+  const { checkDomainsList, auth } = useAppStore();
   const { t } = useTranslation();
-  const { data: list } = API.fileContent(checkDomainsList);
+  const { data: list } = API.fileContent(checkDomainsList, auth);
 
   const [domains, setDomains] = useState<string[]>([]);
   const [result, setResult] = useState<Record<string, boolean | null>>({});

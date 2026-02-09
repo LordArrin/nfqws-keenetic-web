@@ -43,11 +43,12 @@ function RouteComponent() {
       ? filename
       : false;
 
+  const { setNeedSave, setOnSave, needSave, auth } = useAppStore();
+
   const { data: originalContent, isPending } = API.fileContent(
     currentFile,
-    Boolean(currentFile),
+    auth && Boolean(currentFile),
   );
-  const { setNeedSave, setOnSave, needSave } = useAppStore();
 
   const fileInfo = findFile(currentFile);
 

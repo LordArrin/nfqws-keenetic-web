@@ -28,7 +28,9 @@ export const LoginDialog = () => {
     const { data } = await API.login(user, password);
     const success = data?.status === 0;
     setLoginError(!success);
-    void API.invalidateStatus();
+    if (success) {
+      void API.invalidateStatus();
+    }
   };
 
   return (

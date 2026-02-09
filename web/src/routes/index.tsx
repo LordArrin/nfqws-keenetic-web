@@ -45,7 +45,8 @@ export const Route = createFileRoute('/')({
 function RouteComponent() {
   const { nfqws2 } = useStatus();
   const { confFile } = useConfig(nfqws2);
-  const { data: originalConfig, isPending } = API.fileContent(confFile);
+  const { auth } = useAppStore();
+  const { data: originalConfig, isPending } = API.fileContent(confFile, auth);
   const { setNeedSave, needSave, setOnSave } = useAppStore();
 
   const { t } = useTranslation();
