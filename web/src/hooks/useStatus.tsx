@@ -96,7 +96,7 @@ export const useStatus = (): UseStatusResult => {
       status: isError || isPending,
       nfqws2: true,
       service: false,
-      anonym: false,
+      anonym: true,
       isPending,
     };
   }, [isError, isPending, latest, latestWeb, status]);

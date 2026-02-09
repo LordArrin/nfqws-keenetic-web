@@ -36,6 +36,10 @@ define Package/nfqws-keenetic-web/install
 		$(CP) $(PKG_BUILD_DIR)/out/web-openwrt/data/{etc,www} $(1)/
 endef
 
+define Package/nfqws-keenetic-web/conffiles
+$(file <$(PKG_BUILD_DIR)/out/web-openwrt/control/conffiles)
+endef
+
 define Package/nfqws-keenetic-web/postinst
 $(file <$(PKG_BUILD_DIR)/out/web-openwrt/control/postinst)
 endef

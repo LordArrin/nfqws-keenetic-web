@@ -3,6 +3,12 @@ _web-clean:
 	mkdir -p out/$(BUILD_DIR)/control
 	mkdir -p out/$(BUILD_DIR)/data
 
+_web-conffiles:
+	cp ipk/conffiles out/$(BUILD_DIR)/control/conffiles
+	@if [[ "$(BUILD_DIR)" == "web-openwrt" ]]; then \
+		sed -i -E "s#/opt/#/#g" out/$(BUILD_DIR)/control/conffiles; \
+	fi
+
 _web-control:
 	echo "Package: nfqws-keenetic-web" > out/$(BUILD_DIR)/control/control
 	echo "Version: $(VERSION)" >> out/$(BUILD_DIR)/control/control
@@ -25,6 +31,7 @@ _web-ipk:
 	make _web-clean
 
 	# control.tar.gz
+	make _web-conffiles
 	make _web-control
 	make _web-scripts
 	cd out/$(BUILD_DIR)/control; tar czvf ../control.tar.gz .; cd ../../..
@@ -47,6 +54,7 @@ _web-ipk:
 
 _web-apk:
 	make _web-clean
+	make _web-conffiles
 	make _web-scripts
 
 	mkdir -p out/$(BUILD_DIR)/data$(ROOT_DIR)/www/nfqws
