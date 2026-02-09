@@ -14,7 +14,6 @@ import { useTranslation } from '@/hooks/useTranslation';
 export const Footer = () => {
   const { auth } = useAppStore();
   const { anonym } = useStatus();
-  console.warn('anonym', anonym);
   const { t, langcode, setLanguage } = useTranslation();
 
   const { mode, setMode } = useColorScheme();

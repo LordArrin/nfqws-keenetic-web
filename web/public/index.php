@@ -366,7 +366,7 @@ function main(): void
   $authEnabled = $config['auth']['enabled'];
 
   session_start();
-  if ($authEnabled && !isset($_SESSION['auth']) || !$_SESSION['auth']) {
+  if ($authEnabled && (!isset($_SESSION['auth']) || !$_SESSION['auth'])) {
     if ($_POST['cmd'] !== 'login' || !isset($_POST['user']) || !isset($_POST['password']) || !authenticate($_POST['user'], $_POST['password'])) {
       http_response_code(401);
       exit();
