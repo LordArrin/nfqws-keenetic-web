@@ -92,7 +92,9 @@ export const CreateFileDialog = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{t('common.cancel')}</Button>
-        <Button onClick={handleSubmit}>{t('common.create')}</Button>
+        <Button onClick={handleSubmit} disabled={!name.length}>
+          {t('common.create')}
+        </Button>
       </DialogActions>
     </Dialog>
   );
