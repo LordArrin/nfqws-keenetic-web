@@ -181,7 +181,7 @@ function logTokenBase(stream: StringStream, _state: LogState): string | null {
   }
 
   // Other long hex-ish ids (at least 12 chars, with letters+digits) as a single token
-  if (stream.match(/^[0-9a-f]{12,}/i, true)) {
+  if (stream.match(/^[0-9a-f]{12,}(?![A-Za-z0-9_.-])/i, true)) {
     return 'string-2';
   }
 
@@ -189,7 +189,7 @@ function logTokenBase(stream: StringStream, _state: LogState): string | null {
   if (stream.match(/^\d+\/\d+/, true)) {
     return 'number';
   }
-  if (stream.match(/^\d+/, true)) {
+  if (stream.match(/^\d+(?![A-Za-z0-9_.-])/, true)) {
     return 'number';
   }
 
