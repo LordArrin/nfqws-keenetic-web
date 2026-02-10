@@ -60,6 +60,7 @@ components:
         - $ref: '#/components/schemas/StatusRequest'
         - $ref: '#/components/schemas/FilenamesRequest'
         - $ref: '#/components/schemas/FileContentRequest'
+        - $ref: '#/components/schemas/FileCreateRequest'
         - $ref: '#/components/schemas/FileSaveRequest'
         - $ref: '#/components/schemas/FileRemoveRequest'
         - $ref: '#/components/schemas/ServiceActionRequest'
@@ -72,6 +73,7 @@ components:
           status: '#/components/schemas/StatusRequest'
           filenames: '#/components/schemas/FilenamesRequest'
           filecontent: '#/components/schemas/FileContentRequest'
+          filecreate: '#/components/schemas/FileCreateRequest'
           filesave: '#/components/schemas/FileSaveRequest'
           fileremove: '#/components/schemas/FileRemoveRequest'
           reload: '#/components/schemas/ServiceActionRequest'
@@ -115,6 +117,17 @@ components:
         filename:
           type: string
           description: File name to read. If ends with .log, server returns log content.
+      additionalProperties: false
+
+    FileCreateRequest:
+      type: object
+      required: [cmd, filename]
+      properties:
+        cmd:
+          type: string
+          enum: [filecreate]
+        filename:
+          type: string
       additionalProperties: false
 
     FileSaveRequest:
@@ -191,6 +204,7 @@ components:
         - $ref: '#/components/schemas/StatusResponse'
         - $ref: '#/components/schemas/FilenamesResponse'
         - $ref: '#/components/schemas/FileContentResponse'
+        - $ref: '#/components/schemas/FileCreateResponse'
         - $ref: '#/components/schemas/FileSaveResponse'
         - $ref: '#/components/schemas/FileRemoveResponse'
         - $ref: '#/components/schemas/ActionResponse'
@@ -254,6 +268,21 @@ components:
         status: 0
         filename: "nfqws2.conf"
         content: "# Provider network interface..."
+
+    FileCreateResponse:
+      type: object
+      required: [status, filename]
+      properties:
+        status:
+          type: integer
+          description: 0 = ok, 1 = failed
+          enum: [0, 1]
+        filename:
+          type: string
+      additionalProperties: false
+      example:
+        status: 0
+        filename: "user.list"
 
     FileSaveResponse:
       type: object

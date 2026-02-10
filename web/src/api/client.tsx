@@ -12,6 +12,7 @@ import {
   type ApiError,
   type CheckResponse,
   type FileContentResponse,
+  type FileCreateResponse,
   type FilenamesRequest,
   type FilenamesResponse,
   type FileRemoveResponse,
@@ -89,6 +90,11 @@ export const API = {
     });
     return queryClient.invalidateQueries({ queryKey: key });
   },
+
+  createFile: async (filename: string) =>
+    apiClient.indexPhp.postIndexCmd({
+      body: { cmd: 'filecreate', filename },
+    }) as Promise<RequestFnResponse<FileCreateResponse, ApiError>>,
 
   saveFile: async (filename: string, content: string) =>
     apiClient.indexPhp.postIndexCmd({

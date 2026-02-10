@@ -117,6 +117,30 @@ function checkResponseBodyReadable(string $url, int $limitKb = 50): bool
   return $statusCode !== null;
 }
 
+function baseFileName(string $filename): string
+{
+  $filename = basename($filename);
+  if (str_ends_with($filename, '.gz')) {
+    $filename = substr($filename, 0, -3);
+  }
+  return $filename;
+}
+
+function getFilePath(string $filename): string
+{
+  $filename = baseFileName($filename);
+  if (preg_match('/\.(list|list-opkg|list-old)$/i', $filename)) {
+    $path = ROOT_DIR . LISTS_DIR . '/' . basename($filename);
+  } else if (preg_match('/\.log$/i', $filename)) {
+    $path = ROOT_DIR . LOGS_DIR . '/' . basename($filename);
+  } else if (preg_match('/\.lua$/i', $filename)) {
+    $path = ROOT_DIR . LUA_DIR . '/' . basename($filename);
+  } else {
+    $path = ROOT_DIR . CONF_DIR . '/' . basename($filename);
+  }
+  return $path;
+}
+
 function getFiles(string $type = null): array
 {
   function getSortPriority(string $filename): int
@@ -151,15 +175,6 @@ function getFiles(string $type = null): array
       return 0;
     }
     return 10;
-  }
-
-  function baseFileName(string $filename): string
-  {
-    $filename = basename($filename);
-    if (str_ends_with($filename, '.gz')) {
-      $filename = substr($filename, 0, -3);
-    }
-    return $filename;
   }
 
   $result = [];
@@ -207,16 +222,7 @@ function getFiles(string $type = null): array
 
 function getFileContent(string $filename): string
 {
-  $filename = basename($filename);
-  if (preg_match('/\.(list|list-opkg|list-old)$/i', $filename)) {
-    $path = ROOT_DIR . LISTS_DIR . '/' . basename($filename);
-  } else if (preg_match('/\.log$/i', $filename)) {
-    $path = ROOT_DIR . LOGS_DIR . '/' . basename($filename);
-  } else if (preg_match('/\.lua$/i', $filename)) {
-    $path = ROOT_DIR . LUA_DIR . '/' . basename($filename);
-  } else {
-    $path = ROOT_DIR . CONF_DIR . '/' . basename($filename);
-  }
+  $path = getFilePath($filename);
 
   if (file_exists($path)) {
     return file_get_contents($path);
@@ -228,39 +234,32 @@ function getFileContent(string $filename): string
 
 function getLogContent(string $filename): string
 {
-  $filename = basename($filename);
+  $filename = baseFileName($filename);
   $file = file(ROOT_DIR . LOGS_DIR . '/' . $filename);
   $file = array_reverse($file);
   return implode("", $file);
 }
 
+function createFile(string $filename): bool
+{
+  $path = getFilePath($filename);
+  if (file_exists($path)) {
+    return false;
+  }
+  return file_put_contents($path, '') !== false;
+}
+
 function saveFile(string $filename, string $content): bool
 {
-  $filename = basename($filename);
-  if (preg_match('/\.(list|list-opkg|list-old)$/i', $filename)) {
-    $file = ROOT_DIR . LISTS_DIR . '/' . $filename;
-  } elseif (preg_match('/\.log$/i', $filename)) {
-    $file = ROOT_DIR . LOGS_DIR . '/' . $filename;
-  } elseif (preg_match('/\.lua$/i', $filename)) {
-    $file = ROOT_DIR . LUA_DIR . '/' . $filename;
-  } else {
-    $file = ROOT_DIR . CONF_DIR . '/' . $filename;
-  }
-  return file_put_contents($file, normalizeString($content)) !== false;
+  $path = getFilePath($filename);
+  return file_put_contents($path, normalizeString($content)) !== false;
 }
 
 function removeFile(string $filename): bool
 {
-  $filename = basename($filename);
-  if (preg_match('/\.(list|list-opkg|list-old)$/i', $filename)) {
-    $file = ROOT_DIR . LISTS_DIR . '/' . $filename;
-  } else if (preg_match('/\.lua$/i', $filename)) {
-    $file = ROOT_DIR . LUA_DIR . '/' . $filename;
-  } else {
-    $file = ROOT_DIR . CONF_DIR . '/' . $filename;
-  }
-  if (file_exists($file)) {
-    return unlink($file);
+  $path = getFilePath($filename);
+  if (file_exists($path)) {
+    return unlink($path);
   } else {
     return false;
   }
@@ -393,6 +392,11 @@ function main(): void
         $content = getFileContent($_POST['filename']);
       }
       $response = array('status' => 0, 'content' => $content, 'filename' => $_POST['filename']);
+      break;
+
+    case 'filecreate':
+      $result = createFile($_POST['filename']);
+      $response = array('status' => $result ? 0 : 1, 'filename' => $_POST['filename']);
       break;
 
     case 'filesave':

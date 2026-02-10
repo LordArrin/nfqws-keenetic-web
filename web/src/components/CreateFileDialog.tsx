@@ -35,7 +35,7 @@ export const CreateFileDialog = ({
   }, [onClose]);
 
   const handleSubmit = useCallback(async () => {
-    const { data } = await API.saveFile(`${name}.list`, '');
+    const { data } = await API.createFile(`${name}.list`);
     if (data?.status === 0) {
       handleClose();
       await API.invalidateListFiles();
