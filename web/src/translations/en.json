@@ -80,5 +80,9 @@
     "POLICY_EXCLUDE": "Policy excludes processing",
     "IPV6_ENABLED": "IPv6 enabled",
     "LOG_LEVEL": "Debug logging"
+  },
+  "editor": {
+    "magic_button": "Remove duplicates and sort",
+    "undo_button": "Undo"
   }
 }
