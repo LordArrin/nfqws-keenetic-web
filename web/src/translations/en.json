@@ -82,7 +82,7 @@
     "LOG_LEVEL": "Debug logging"
   },
   "editor": {
-    "magic_button": "Remove duplicates and sort",
+    "magic_button": "Remove duplicates",
     "undo_button": "Undo"
   }
 }

@@ -91,7 +91,6 @@ export const Editor = ({
     const data = Array.from(new Set(lines))
       .map((line) => line.trim())
       .filter((line) => line.length > 0)
-      .sort()
       .join('\n');
 
     editorView.dispatch({
