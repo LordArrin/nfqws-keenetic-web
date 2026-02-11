@@ -13,13 +13,14 @@ import StopCircleIcon from '@mui/icons-material/StopCircle';
 import {
   Box,
   Button,
+  Link,
   ListItemIcon,
   Menu,
   MenuItem,
   Stack,
   Typography,
 } from '@mui/material';
-import { useParams } from '@tanstack/react-router';
+import { Link as RouterLink, useParams } from '@tanstack/react-router';
 
 import { API } from '@/api/client';
 import { type ServiceActionRequest } from '@/api/schema';
@@ -103,8 +104,18 @@ export const Header = () => {
             alignItems="center"
             flexGrow={1000}
           >
-            {' '}
-            <Stack direction="row" spacing={1.3} alignItems="center">
+            <Link
+              component={RouterLink}
+              underline="none"
+              to="/"
+              sx={{
+                display: 'inline-flex',
+                gap: 1.3,
+                alignItems: 'center',
+                direction: 'row',
+                userSelect: 'none',
+              }}
+            >
               <Typography
                 component="h2"
                 fontFamily={'Vendor Logo, Roboto, sans-serif'}
@@ -128,7 +139,6 @@ export const Header = () => {
                 fontSize="1.131em"
                 lineHeight={1}
                 pt="3px"
-                ml="-0.2em"
                 sx={{
                   '@media (max-width: 475px)': {
                     fontSize: '0.8em',
@@ -164,7 +174,7 @@ export const Header = () => {
                   }}
                 />
               )}
-            </Stack>
+            </Link>
             <CurrentVersion
               sx={{
                 justifyContent: 'flex-end',

@@ -82,16 +82,33 @@ export const Editor = ({
   }, [type, onSave]);
 
   const handleMagicButton = useCallback(() => {
-    const text = editorView?.state.doc.toString().trim();
-    if (!editorView || !text) {
+    if (!editorView) {
       return;
     }
 
+    const text = editorView.state.doc.toString();
     const lines = text.split('\n');
-    const data = Array.from(new Set(lines))
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .join('\n');
+
+    const seen = new Set<string>();
+    const result: string[] = [];
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+
+      if (trimmed.length === 0) {
+        result.push(line);
+        continue;
+      }
+
+      if (seen.has(trimmed)) {
+        continue;
+      }
+
+      seen.add(trimmed);
+      result.push(trimmed);
+    }
+
+    const data = result.join('\n');
 
     editorView.dispatch({
       changes: {
@@ -171,7 +188,7 @@ export const Editor = ({
         <Tooltip
           title={t('editor.undo_button')}
           enterTouchDelay={0}
-          placement="left"
+          placement="bottom"
         >
           <IconButton
             size="small"
@@ -179,9 +196,9 @@ export const Editor = ({
             disabled={!changed}
             sx={{
               position: 'absolute',
-              right: '6pt',
-              top: '6pt',
-              opacity: 0.5,
+              right: '16pt',
+              top: '4pt',
+              opacity: 0.7,
               color: 'text.secondary',
               transition: 'color 0.1s ease-in-out, opacity 0.1s ease-in-out',
               minWidth: 0,
@@ -200,17 +217,17 @@ export const Editor = ({
         <Tooltip
           title={t('editor.magic_button')}
           enterTouchDelay={0}
-          placement="left"
+          placement="bottom"
         >
           <IconButton
             size="small"
             onClick={handleMagicButton}
             sx={{
               position: 'absolute',
-              right: '6pt',
-              top: '6pt',
-              transform: 'translateY(120%)',
-              opacity: 0.5,
+              right: '16pt',
+              top: '4pt',
+              transform: 'translateX(-120%)',
+              opacity: 0.7,
               color: 'text.secondary',
               transition: 'color 0.1s ease-in-out, opacity 0.1s ease-in-out',
               minWidth: 0,
