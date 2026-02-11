@@ -82,16 +82,33 @@ export const Editor = ({
   }, [type, onSave]);
 
   const handleMagicButton = useCallback(() => {
-    const text = editorView?.state.doc.toString().trim();
-    if (!editorView || !text) {
+    if (!editorView) {
       return;
     }
 
+    const text = editorView.state.doc.toString();
     const lines = text.split('\n');
-    const data = Array.from(new Set(lines))
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .join('\n');
+
+    const seen = new Set<string>();
+    const result: string[] = [];
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+
+      if (trimmed.length === 0) {
+        result.push(line);
+        continue;
+      }
+
+      if (seen.has(trimmed)) {
+        continue;
+      }
+
+      seen.add(trimmed);
+      result.push(trimmed);
+    }
+
+    const data = result.join('\n');
 
     editorView.dispatch({
       changes: {
