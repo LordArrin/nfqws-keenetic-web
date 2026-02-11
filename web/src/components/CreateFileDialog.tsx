@@ -36,7 +36,8 @@ export const CreateFileDialog = ({
   }, [onClose]);
 
   const handleSubmit = useCallback(async () => {
-    if (!trimmedName.length) {
+    if (!trimmedName.length || !/^[a-zA-Z0-9_-]+$/.test(trimmedName)) {
+      setError(true);
       return;
     }
     const { data } = await API.createFile(`${trimmedName}.list`);
