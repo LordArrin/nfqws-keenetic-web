@@ -188,7 +188,7 @@ export const Editor = ({
         <Tooltip
           title={t('editor.undo_button')}
           enterTouchDelay={0}
-          placement="left"
+          placement="bottom"
         >
           <IconButton
             size="small"
@@ -196,9 +196,9 @@ export const Editor = ({
             disabled={!changed}
             sx={{
               position: 'absolute',
-              right: '6pt',
-              top: '6pt',
-              opacity: 0.5,
+              right: '16pt',
+              top: '4pt',
+              opacity: 0.7,
               color: 'text.secondary',
               transition: 'color 0.1s ease-in-out, opacity 0.1s ease-in-out',
               minWidth: 0,
@@ -217,17 +217,17 @@ export const Editor = ({
         <Tooltip
           title={t('editor.magic_button')}
           enterTouchDelay={0}
-          placement="left"
+          placement="bottom"
         >
           <IconButton
             size="small"
             onClick={handleMagicButton}
             sx={{
               position: 'absolute',
-              right: '6pt',
-              top: '6pt',
-              transform: 'translateY(120%)',
-              opacity: 0.5,
+              right: '16pt',
+              top: '4pt',
+              transform: 'translateX(-120%)',
+              opacity: 0.7,
               color: 'text.secondary',
               transition: 'color 0.1s ease-in-out, opacity 0.1s ease-in-out',
               minWidth: 0,
