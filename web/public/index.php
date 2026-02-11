@@ -242,6 +242,11 @@ function getLogContent(string $filename): string
 
 function createFile(string $filename): bool
 {
+  $base = baseFileName($filename);
+  $stem = pathinfo($base, PATHINFO_FILENAME);
+  if ($base === '' || $base === '.' || $base === '..' || trim($stem) === '') {
+    return false;
+  }
   $path = getFilePath($filename);
   if (file_exists($path)) {
     return false;
