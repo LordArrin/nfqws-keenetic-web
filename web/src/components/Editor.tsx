@@ -95,7 +95,11 @@ export const Editor = ({
     for (const line of lines) {
       const trimmed = line.trim();
 
-      if (trimmed.length === 0) {
+      if (
+        trimmed.length === 0 ||
+        trimmed.startsWith('#') ||
+        trimmed.startsWith('//')
+      ) {
         result.push(line);
         continue;
       }
