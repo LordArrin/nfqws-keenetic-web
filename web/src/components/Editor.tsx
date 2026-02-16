@@ -20,6 +20,7 @@ import {
   codeMirrorLangNfqws,
   codeMirrorLangNfqwsArgs,
 } from '@/utils/codeMirrorLangNfqws';
+import { codeMirrorLangList } from '@/utils/codeMirrorLangList';
 
 const historyCompartment = new Compartment();
 
@@ -72,6 +73,8 @@ export const Editor = ({
       result.push(codeMirrorLangNfqws());
     } else if (type === 'arg') {
       result.push(codeMirrorLangNfqwsArgs());
+    } else if (type === 'list') {
+      result.push(codeMirrorLangList());
     } else if (type === 'log') {
       result.push(codeMirrorLangLog());
     } else if (type === 'lua') {
