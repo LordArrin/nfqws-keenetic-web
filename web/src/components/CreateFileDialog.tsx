@@ -27,6 +27,7 @@ export const CreateFileDialog = ({
   const navigate = useNavigate();
 
   const { t } = useTranslation();
+  const trimmedName = name.trim();
 
   const handleClose = useCallback(() => {
     onClose();
@@ -35,15 +36,19 @@ export const CreateFileDialog = ({
   }, [onClose]);
 
   const handleSubmit = useCallback(async () => {
-    const { data } = await API.createFile(`${name}.list`);
+    if (!trimmedName.length || !/^[a-zA-Z0-9_-]+$/.test(trimmedName)) {
+      setError(true);
+      return;
+    }
+    const { data } = await API.createFile(`${trimmedName}.list`);
     if (data?.status === 0) {
       handleClose();
       await API.invalidateListFiles();
-      void navigate({ to: `/lists/${name}.list` });
+      void navigate({ to: `/lists/${trimmedName}.list` });
     } else {
       setError(true);
     }
-  }, [handleClose, name, navigate]);
+  }, [handleClose, navigate, trimmedName]);
 
   return (
     <Dialog
@@ -92,7 +97,7 @@ export const CreateFileDialog = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{t('common.cancel')}</Button>
-        <Button onClick={handleSubmit} disabled={!name.length}>
+        <Button onClick={handleSubmit} disabled={!trimmedName.length}>
           {t('common.create')}
         </Button>
       </DialogActions>
